@@ -26,7 +26,10 @@ func (_ Log) DoHandle(c echo.Context) error {
 		return err
 	}
 
-	kafka.Send(messages.Log{Level: log.Level, Message: log.Message})
+	err := kafka.Send(messages.Log{Level: log.Level, Message: log.Message})
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
 
 	return c.JSON(http.StatusNoContent, nil)
 }

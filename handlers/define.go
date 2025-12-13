@@ -12,6 +12,7 @@ var handlers []Handler
 func init() {
 	handlers = []Handler{
 		v1.Echo{},
+		v1.Log{},
 	}
 }
 
