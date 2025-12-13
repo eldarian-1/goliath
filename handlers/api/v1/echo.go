@@ -23,5 +23,5 @@ func (_ Echo) DoHandle(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	return c.JSON(http.StatusCreated, u)
+	return c.JSON(http.StatusOK, u)
 }
