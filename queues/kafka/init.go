@@ -72,17 +72,12 @@ func processTopic(reader reader) {
 	for {
 		msg, err := reader.kafkaReader.ReadMessage(context.Background())
 		if err != nil {
-			continue
+			panic(err)
 		}
 
 		err = reader.consumer.Process(msg.Value)
 		if err != nil {
 			panic(err)
 		}
-
-		// err = reader.kafkaReader.CommitMessages(context.Background(), msg)
-		// if err != nil {
-		// 	panic(err)
-		// }
 	}
 }
