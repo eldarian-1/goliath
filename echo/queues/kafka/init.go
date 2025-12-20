@@ -2,7 +2,6 @@ package kafka
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/segmentio/kafka-go"
 
@@ -78,15 +77,5 @@ func processTopic(reader reader) {
 		if err != nil {
 			panic(err)
 		}
-	}
-}
-
-func CloseAllConnections() {
-	fmt.Println("Close all Kafka coonections")
-	for _, writer := range kafkaWriterMap {
-		writer.Close()
-	}
-	for _, reader := range readerMap {
-		reader.kafkaReader.Close()
 	}
 }
