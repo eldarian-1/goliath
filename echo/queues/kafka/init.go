@@ -83,14 +83,10 @@ func processTopic(reader reader) {
 
 func CloseAllConnections() {
 	fmt.Println("Close all Kafka coonections")
-	if kafkaWriterMap != nil {
-		for _, writer := range kafkaWriterMap {
-			writer.Close()
-		}
+	for _, writer := range kafkaWriterMap {
+		writer.Close()
 	}
-	if readerMap != nil {
-		for _, reader := range readerMap {
-			reader.kafkaReader.Close()
-		}
+	for _, reader := range readerMap {
+		reader.kafkaReader.Close()
 	}
 }
