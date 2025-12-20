@@ -2,6 +2,7 @@ package messages
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 type Log struct {

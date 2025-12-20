@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/segmentio/kafka-go"
 
@@ -37,7 +38,6 @@ func initWriters() {
 			Brokers: []string{kafkaHost},
 			Topic:   topic,
 		})
-		// defer writer.Close()
 		kafkaWriterMap[topic] = writer
 	}
 }
@@ -54,7 +54,6 @@ func initReaders() {
 			Brokers: []string{kafkaHost},
 			Topic:   topic,
 		})
-		// defer kafkaReader.Close()
 		readerMap[topic] = reader{
 			consumer: consumer,
 			kafkaReader: kafkaReader,
@@ -78,6 +77,20 @@ func processTopic(reader reader) {
 		err = reader.consumer.Process(msg.Value)
 		if err != nil {
 			panic(err)
+		}
+	}
+}
+
+func CloseAllConnections() {
+	fmt.Println("Close all Kafka coonections")
+	if kafkaWriterMap != nil {
+		for _, writer := range kafkaWriterMap {
+			writer.Close()
+		}
+	}
+	if readerMap != nil {
+		for _, reader := range readerMap {
+			reader.kafkaReader.Close()
 		}
 	}
 }
