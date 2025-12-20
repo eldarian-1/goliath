@@ -1,12 +1,14 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 
 	"goliath/queues/kafka"
 	kafka_messages "goliath/queues/kafka/messages"
+	"goliath/queues/rabbit"
 	rabbit_messages "goliath/queues/rabbit/messages"
 	"goliath/types/api"
 )
@@ -38,6 +40,9 @@ func (_ Log) DoHandle(c echo.Context) error {
 func sendMessage(log *api.Log) error {
 	if log.Broker != nil && *log.Broker == "rabbit" {
 		return rabbit.Send(rabbit_messages.Log{Level: log.Level, Message: log.Message})
+	}
+	if log.Broker != nil && *log.Broker != "kafka" {
+		return fmt.Errorf("Undefinedm broker: %s", *log.Broker)
 	}
 	return kafka.Send(kafka_messages.Log{Level: log.Level, Message: log.Message})
 }

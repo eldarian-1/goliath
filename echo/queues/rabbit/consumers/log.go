@@ -10,7 +10,7 @@ import (
 
 type Log struct {}
 
-func (_ Log) GetTopic() string {
+func (_ Log) GetQueue() string {
 	return "log"
 }
 
@@ -27,5 +27,5 @@ func (_ Log) Process(message []byte) error {
 }
 
 func process(log messages.Log) {
-	fmt.Printf("%s from Kafka: %s\n", log.Level, log.Message)
+	fmt.Printf("%s from RabbitMQ: %s\n", log.Level, log.Message)
 }
