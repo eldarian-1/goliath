@@ -31,3 +31,8 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
     depends_on:
       - kafka
+
+  rabbitmq:
+    image: rabbitmq:latest
+    ports:
+      - 15672:15672
