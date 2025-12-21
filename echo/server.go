@@ -14,6 +14,13 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	defer func() {
+        if r := recover(); r != nil {
+            fmt.Println("panic:", r)
+            cancel()
+        }
+    }()
+
 	err := migrations.Migrate(ctx)
 	if err != nil {
 		fmt.Println(err.Error())
