@@ -30,7 +30,7 @@ func (_ T1) Execute(wg *sync.WaitGroup) {
 
 func (_ T1) Log() {
 	fmt.Println("T1")
-	log(1, "dwa", T1{})
+	log(1, "dwa", T1{}, T2{})
 }
 
 func log(args ...interface{}) {
@@ -40,6 +40,8 @@ func log(args ...interface{}) {
 			fmt.Printf("%d) Int value: %d\n", i, arg)
 		case string:
 			fmt.Printf("%d) Str value: %s\n", i, arg)
+		case T1:
+			fmt.Printf("%d) T1 value: %s\n", i, arg)
 		default:
 			fmt.Printf("%d) Unknown type: %w\n", i, arg)
 		}
