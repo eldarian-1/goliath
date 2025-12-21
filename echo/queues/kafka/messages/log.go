@@ -5,7 +5,7 @@ import (
 )
 
 type Log struct {
-	Level	string `json:"level"`
+	Level   string `json:"level"`
 	Message string `json:"message"`
 }
 

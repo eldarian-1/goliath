@@ -27,11 +27,11 @@ func Send(message messages.Message) error {
 
 	q, err := ch.QueueDeclare(
 		message.GetQueue(), // name
-		false,   			// durable
-		false,   			// delete when unused
-		false,   			// exclusive
-		false,   			// no-wait
-		nil,     			// arguments
+		false,              // durable
+		false,              // delete when unused
+		false,              // exclusive
+		false,              // no-wait
+		nil,                // arguments
 	)
 	if err != nil {
 		return err
@@ -51,7 +51,7 @@ func Send(message messages.Message) error {
 		q.Name, // routing key
 		false,  // mandatory
 		false,  // immediate
-		amqp.Publishing {
+		amqp.Publishing{
 			ContentType: message.GetContentType(),
 			Body:        body,
 		},

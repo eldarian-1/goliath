@@ -13,7 +13,7 @@ import (
 	"goliath/types/api"
 )
 
-type Log struct {}
+type Log struct{}
 
 func (_ Log) GetPath() string {
 	return "/api/v1/log"

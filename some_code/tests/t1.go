@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"sync"
 	"fmt"
 	"math/rand"
+	"sync"
 	"time"
 )
 

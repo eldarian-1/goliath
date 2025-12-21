@@ -3,19 +3,20 @@ package users
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 
-	"goliath/types/api"
 	"goliath/repositories"
+	"goliath/types/api"
 )
 
 const (
-	defaultLimit = 10
+	defaultLimit       = 10
 	defaultWithDeleted = false
 )
 
-type UsersGet struct {}
+type UsersGet struct{}
 
 func (_ UsersGet) GetPath() string {
 	return "/api/v1/users"
@@ -26,8 +27,9 @@ func (_ UsersGet) GetMethod() string {
 }
 
 func (_ UsersGet) DoHandle(c echo.Context) error {
+	limit := getLimit(c)
 	postgresUsers, err := repositories.GetUsers(
-		getLimit(c),
+		limit+1,
 		getCursorById(c),
 		getWithDeleted(c),
 	)
@@ -37,14 +39,25 @@ func (_ UsersGet) DoHandle(c echo.Context) error {
 
 	var response api.GetUsersResponse
 	response.Users = make([]api.User, 0, len(postgresUsers))
-	for _, user := range postgresUsers {
+	for i, user := range postgresUsers {
+		if i >= int(limit) {
+			break
+		}
+		var deletedAt *time.Time
+		if user.DeletedAt.Valid {
+			deletedAt = &user.DeletedAt.Time
+		}
 		response.Users = append(response.Users, api.User{
-			Id: user.Id,
-			Name: user.Name,
+			Id:        &user.Id.Int64,
+			Name:      user.Name,
 			CreatedAt: &user.CreatedAt,
 			UpdatedAt: &user.UpdatedAt,
-			DeletedAt: user.DeletedAt,
+			DeletedAt: deletedAt,
 		})
+	}
+
+	if int64(len(postgresUsers)) > limit {
+		response.CursorById = &postgresUsers[limit].Id.Int64
 	}
 
 	return c.JSON(http.StatusOK, response)

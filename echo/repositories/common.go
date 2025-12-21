@@ -1,30 +1,38 @@
 package repositories
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
+	"os"
 
-	_ "github.com/lib/pq"
-
-	"goliath/migrations"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func exec(query string, args ...any) (sql.Result, error) {
-	db, err := sql.Open(migrations.DriverName, migrations.ConnectionStr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
-	}
-	defer db.Close()
+const (
+	connectionUrl = "postgres://user:password@localhost:5432/goliath"
+)
 
-	return db.Exec(query, args)
+func Exec(query string, args ...any) (pgconn.CommandTag, error) {
+	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, connectionUrl)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(ctx)
+
+	return conn.Exec(ctx, query, args...)
 }
 
-func query(query string, args ...any) (*sql.Rows, error) {
-	db, err := sql.Open(migrations.DriverName, migrations.ConnectionStr)
+func Query(query string, args ...any) (pgx.Rows, error) {
+	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, connectionUrl)
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
 	}
-	defer db.Close()
+	defer conn.Close(ctx)
 
-	return db.Query(query, args)
+	return conn.Query(ctx, query, args...)
 }

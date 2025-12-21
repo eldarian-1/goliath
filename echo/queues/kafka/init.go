@@ -10,7 +10,7 @@ import (
 )
 
 type reader struct {
-	consumer consumers.Consumer
+	consumer    consumers.Consumer
 	kafkaReader *kafka.Reader
 }
 
@@ -54,7 +54,7 @@ func initReaders() {
 			Topic:   topic,
 		})
 		readerMap[topic] = reader{
-			consumer: consumer,
+			consumer:    consumer,
 			kafkaReader: kafkaReader,
 		}
 	}

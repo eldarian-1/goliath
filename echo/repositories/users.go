@@ -15,37 +15,42 @@ const (
 			updated_at,
 			deleted_at
 		FROM
-			users
+			goliath.users
 		WHERE
-			($2 IS NULL OR id <= $2) AND
-			($3 OR deleted_at IS NULL)
+			($2::BIGINT IS NULL OR id <= $2::BIGINT) AND
+			($3::BOOLEAN OR deleted_at IS NULL)
 		ORDER BY id DESC
-		LIMIT $1;
+		LIMIT $1::BIGINT;
 	`
 
 	insertQuery = `
-		INSERT INTO	users (name)
-		VALUES ($1);
+		INSERT INTO	goliath.users (name)
+		VALUES ($1::TEXT);
 	`
 
 	updateQuery = `
 		UPDATE
-			users
+			goliath.users
 		SET
-			name = $2,
-			deleted_at = $3,
+			name = $2::TEXT,
+			deleted_at = $3::TIMESTAMPTZ,
 			updated_at = NOW()
 		WHERE
-			id = $1 AND
+			id = $1::BIGINT AND
 			(
-				name IS DISTINCT FROM $2 OR
-				(deleted_at IS NULL) IS DISTINCT FROM ($3 IS NULL)
+				name IS DISTINCT FROM $2::TEXT OR
+				(deleted_at IS NULL) IS DISTINCT FROM ($3::TIMESTAMPTZ IS NULL)
 			);
 	`
 )
 
 func GetUsers(limit int64, cursorById *int64, withDeleted bool) ([]postgres.User, error) {
-	rows, err := query(getQuery, cursorById, limit)
+	rows, err := Query(
+		getQuery,
+		limit,
+		cursorById,
+		withDeleted,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -54,27 +59,27 @@ func GetUsers(limit int64, cursorById *int64, withDeleted bool) ([]postgres.User
 
 	users := []postgres.User{}
 
-    for rows.Next(){
-        u := postgres.User{}
-        err := rows.Scan(&u.Id, &u.Name, &u.CreatedAt, &u.UpdatedAt, u.DeletedAt)
-        if err != nil{
-            fmt.Println(err)
-            continue
-        }
-        users = append(users, u)
-    }
+	for rows.Next() {
+		u := postgres.User{}
+		err := rows.Scan(&u.Id, &u.Name, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		users = append(users, u)
+	}
 
 	return users, nil
 }
 
-func UpsertUser(user postgres.User) error {
-	if user.Id == nil {
-		_, err := exec(insertQuery, user.Name)
+func UpsertUser(user postgres.User) (bool, error) {
+	if !user.Id.Valid {
+		_, err := Exec(insertQuery, user.Name)
 
-		return err
+		return false, err
 	}
 
-	_, err := exec(updateQuery, user.Id, user.Name, user.DeletedAt)
+	tag, err := Exec(updateQuery, user.Id, user.Name, user.DeletedAt)
 
-	return err
+	return tag.RowsAffected() > 0, err
 }

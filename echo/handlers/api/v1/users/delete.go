@@ -11,7 +11,7 @@ import (
 	"goliath/types/api"
 )
 
-type UsersDelete struct {}
+type UsersDelete struct{}
 
 func (_ UsersDelete) GetPath() string {
 	return "/api/v1/users"
@@ -25,28 +25,28 @@ func (_ UsersDelete) DoHandle(c echo.Context) error {
 	id, err := getUserId(c)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, api.Error{
-			Code:	 "bad_request",
+			Code:    "bad_request",
 			Message: "Invalid id",
 		})
 	}
 
-	users, err := repositories.GetUsers(1, &id, true)
+	users, err := repositories.GetUsers(1, &id, false)
 	if err != nil {
 		return err
 	}
 
 	if len(users) == 0 {
 		return c.JSON(http.StatusNotFound, api.Error{
-			Code:	 "not_found",
+			Code:    "not_found",
 			Message: "User not found",
 		})
 	}
 
 	user := users[0]
-	user.DeletedAt = new(time.Time)
-	*user.DeletedAt = time.Now()
+	user.DeletedAt.Valid = true
+	user.DeletedAt.Time = time.Now()
 
-	err = repositories.UpsertUser(user)
+	_, err = repositories.UpsertUser(user)
 	if err != nil {
 		return err
 	}

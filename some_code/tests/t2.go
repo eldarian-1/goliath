@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"sync"
 	"fmt"
+	"sync"
 )
 
 func T2(wg *sync.WaitGroup) {

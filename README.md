@@ -22,6 +22,13 @@ curl -i -v -X POST \
 ```
 
 ```bash
+curl -i -v -X POST \
+    localhost:8080/api/v1/users \
+    -H 'Content-Type: application/json' \
+    -d '{"id":1,"name":"Eldarian"}'
+```
+
+```bash
 docker-compose up -d
 ```
 

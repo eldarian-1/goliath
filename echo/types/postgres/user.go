@@ -1,13 +1,14 @@
 package postgres
 
 import (
+	"database/sql"
 	"time"
 )
 
 type User struct {
-	Id			*int64
-	Name		string
-	CreatedAt	time.Time
-	UpdatedAt	time.Time
-	DeletedAt	*time.Time
+	Id        sql.NullInt64
+	Name      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt sql.NullTime
 }

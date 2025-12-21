@@ -29,23 +29,23 @@ func initConsumer(consumer consumers.Consumer) {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		consumer.GetQueue(),	// name
-		false,  				// durable
-		false,   				// delete when unused
-		false,   				// exclusive
-		false,   				// no-wait
-		nil,     				// arguments
+		consumer.GetQueue(), // name
+		false,               // durable
+		false,               // delete when unused
+		false,               // exclusive
+		false,               // no-wait
+		nil,                 // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 
 	msgs, err := ch.Consume(
-		q.Name,			// queue
-		consumerName,	// consumer
-		true,   		// auto-ack
-		false,  		// exclusive
-		false,  		// no-local
-		false,  		// no-wait
-		nil,    		// args
+		q.Name,       // queue
+		consumerName, // consumer
+		true,         // auto-ack
+		false,        // exclusive
+		false,        // no-local
+		false,        // no-wait
+		nil,          // args
 	)
 	failOnError(err, "Failed to register a consumer")
 
@@ -64,7 +64,7 @@ func initConsumer(consumer consumers.Consumer) {
 }
 
 func failOnError(err error, msg string) {
-  if err != nil {
-    log.Panicf("%s: %s", msg, err)
-  }
+	if err != nil {
+		log.Panicf("%s: %s", msg, err)
+	}
 }

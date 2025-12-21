@@ -8,7 +8,7 @@ import (
 	"goliath/queues/kafka/messages"
 )
 
-type Log struct {}
+type Log struct{}
 
 func (_ Log) GetQueue() string {
 	return "log"
