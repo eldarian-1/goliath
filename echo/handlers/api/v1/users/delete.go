@@ -30,7 +30,7 @@ func (_ UsersDelete) DoHandle(c echo.Context) error {
 		})
 	}
 
-	users, err := repositories.GetUsers(1, &id, false)
+	users, err := repositories.GetUsers(c.Request().Context(), 1, &id, false)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (_ UsersDelete) DoHandle(c echo.Context) error {
 	user.DeletedAt.Valid = true
 	user.DeletedAt.Time = time.Now()
 
-	_, err = repositories.UpsertUser(user)
+	_, err = repositories.UpsertUser(c.Request().Context(), user)
 	if err != nil {
 		return err
 	}

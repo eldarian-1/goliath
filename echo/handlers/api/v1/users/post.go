@@ -32,21 +32,17 @@ func (_ UsersPost) DoHandle(c echo.Context) error {
 		id.Int64 = *u.Id
 	}
 
-	ok, err := repositories.UpsertUser(postgres.User{
-		Id:        id,
-		Name:      u.Name,
-		DeletedAt: sql.NullTime{Valid: false},
-	})
+	_, err := repositories.UpsertUser(
+		c.Request().Context(),
+		postgres.User{
+			Id:        id,
+			Name:      u.Name,
+			DeletedAt: sql.NullTime{Valid: false},
+		},
+	)
 
 	if err != nil {
 		return err
-	}
-
-	if !ok {
-		return c.JSON(http.StatusNotFound, api.Error{
-			Code:    "not_found",
-			Message: "User not found",
-		})
 	}
 
 	return c.JSON(http.StatusNoContent, u)

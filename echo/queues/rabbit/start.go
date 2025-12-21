@@ -1,6 +1,7 @@
 package rabbit
 
 import (
+	"context"
 	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -10,16 +11,16 @@ import (
 
 const consumerName = "echo_server_rabbit_consumer"
 
-func init() {
+func StartRabbitConsumers(ctx context.Context) {
 	consumers := []consumers.Consumer{
 		consumers.Log{},
 	}
 	for _, consumer := range consumers {
-		go initConsumer(consumer)
+		go startConsumer(ctx, consumer)
 	}
 }
 
-func initConsumer(consumer consumers.Consumer) {
+func startConsumer(ctx context.Context, consumer consumers.Consumer) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -49,18 +50,17 @@ func initConsumer(consumer consumers.Consumer) {
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	var forever chan struct{}
-
-	go func() {
-		for d := range msgs {
+	for {
+		select {
+		case d := <-msgs:
 			err := consumer.Process(d.Body)
 			if err != nil {
 				log.Printf("Failed with error: %s\n", err.Error())
 			}
+		case <-ctx.Done():
+			return
 		}
-	}()
-
-	<-forever
+	}
 }
 
 func failOnError(err error, msg string) {

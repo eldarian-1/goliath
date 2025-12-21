@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"fmt"
 
 	"goliath/types/postgres"
@@ -44,8 +45,9 @@ const (
 	`
 )
 
-func GetUsers(limit int64, cursorById *int64, withDeleted bool) ([]postgres.User, error) {
+func GetUsers(ctx context.Context, limit int64, cursorById *int64, withDeleted bool) ([]postgres.User, error) {
 	rows, err := Query(
+		ctx,
 		getQuery,
 		limit,
 		cursorById,
@@ -72,14 +74,14 @@ func GetUsers(limit int64, cursorById *int64, withDeleted bool) ([]postgres.User
 	return users, nil
 }
 
-func UpsertUser(user postgres.User) (bool, error) {
+func UpsertUser(ctx context.Context, user postgres.User) (bool, error) {
 	if !user.Id.Valid {
-		_, err := Exec(insertQuery, user.Name)
+		tag, err := Exec(ctx, insertQuery, user.Name)
 
-		return false, err
+		return tag.RowsAffected() > 0, err
 	}
 
-	tag, err := Exec(updateQuery, user.Id, user.Name, user.DeletedAt)
+	tag, err := Exec(ctx, updateQuery, user.Id, user.Name, user.DeletedAt)
 
 	return tag.RowsAffected() > 0, err
 }

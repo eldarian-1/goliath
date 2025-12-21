@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -13,7 +14,7 @@ const (
 	migrationsDir = "/Users/eldarian-13/goliath/echo/migrations/postgres"
 )
 
-func Migrate() error {
+func Migrate(ctx context.Context) error {
 	files, err := os.ReadDir(migrationsDir)
 	if err != nil {
 		fmt.Printf("failed to read migrations directory: %s", err.Error())
@@ -36,7 +37,7 @@ func Migrate() error {
 			return fmt.Errorf("failed to read migration file %s: %w", filename, err)
 		}
 
-		if _, err := repositories.Exec(string(content)); err != nil {
+		if _, err := repositories.Exec(ctx, string(content)); err != nil {
 			return fmt.Errorf("failed to execute migration %s: %w", filename, err)
 		}
 

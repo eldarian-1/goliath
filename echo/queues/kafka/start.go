@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"sync"
 
 	"github.com/segmentio/kafka-go"
 
@@ -22,7 +23,6 @@ var readerMap map[string]reader
 func init() {
 	initWriters()
 	initReaders()
-	startTopicsProcessing()
 }
 
 func initWriters() {
@@ -60,22 +60,30 @@ func initReaders() {
 	}
 }
 
-func startTopicsProcessing() {
+func StartKafkaConsumers(ctx context.Context) {
+	var wg sync.WaitGroup
+
 	for _, reader := range readerMap {
-		go processTopic(reader)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			go processTopic(ctx, reader)
+		}()
 	}
+
+	wg.Wait()
 }
 
-func processTopic(reader reader) {
+func processTopic(ctx context.Context, reader reader) {
 	for {
-		msg, err := reader.kafkaReader.ReadMessage(context.Background())
+		msg, err := reader.kafkaReader.ReadMessage(ctx)
 		if err != nil {
-			panic(err)
+			return
 		}
 
 		err = reader.consumer.Process(msg.Value)
 		if err != nil {
-			panic(err)
+			return
 		}
 	}
 }

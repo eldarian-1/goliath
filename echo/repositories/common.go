@@ -2,8 +2,7 @@ package repositories
 
 import (
 	"context"
-	"fmt"
-	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -13,26 +12,30 @@ const (
 	connectionUrl = "postgres://user:password@localhost:5432/goliath"
 )
 
-func Exec(query string, args ...any) (pgconn.CommandTag, error) {
-	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, connectionUrl)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-	defer conn.Close(ctx)
+func Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
+	withTimeout, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
-	return conn.Exec(ctx, query, args...)
+	conn, err := pgx.Connect(withTimeout, connectionUrl)
+	if err != nil {
+		cancel()
+		return pgconn.CommandTag{}, err
+	}
+	defer conn.Close(withTimeout)
+
+	return conn.Exec(withTimeout, query, args...)
 }
 
-func Query(query string, args ...any) (pgx.Rows, error) {
-	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, connectionUrl)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-	defer conn.Close(ctx)
+func Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
+	withTimeout, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
-	return conn.Query(ctx, query, args...)
+	conn, err := pgx.Connect(withTimeout, connectionUrl)
+	if err != nil {
+		cancel()
+		return nil, err
+	}
+	defer conn.Close(withTimeout)
+
+	return conn.Query(withTimeout, query, args...)
 }

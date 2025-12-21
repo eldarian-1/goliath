@@ -29,6 +29,7 @@ func (_ UsersGet) GetMethod() string {
 func (_ UsersGet) DoHandle(c echo.Context) error {
 	limit := getLimit(c)
 	postgresUsers, err := repositories.GetUsers(
+		c.Request().Context(),
 		limit+1,
 		getCursorById(c),
 		getWithDeleted(c),
