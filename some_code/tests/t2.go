@@ -5,8 +5,14 @@ import (
 	"sync"
 )
 
-func T2(wg *sync.WaitGroup) {
+type T2 struct {}
+
+func (_ *T2) Execute(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	fmt.Println("Hello world")
+}
+
+func (_ T2) Log() {
+	fmt.Println("T2")
 }

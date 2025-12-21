@@ -8,11 +8,17 @@ import (
 )
 
 func main() {
+	tests := []tests.Test{
+		tests.T1{},
+		&tests.T2{},
+	}
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(len(tests))
 
-	go tests.T1(&wg)
-	go tests.T2(&wg)
+	for _, test := range tests {
+		go test.Execute(&wg)
+		test.Log()
+	}
 
 	wg.Wait()
 

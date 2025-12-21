@@ -7,17 +7,9 @@ import (
 	"time"
 )
 
-func setInt(intChan chan int) {
-	time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
-	intChan <- 13
-}
+type T1 struct {}
 
-func setStr(strChan chan string) {
-	time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
-	strChan <- "june"
-}
-
-func T1(wg *sync.WaitGroup) {
+func (_ T1) Execute(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	intChan := make(chan int)
@@ -34,4 +26,18 @@ func T1(wg *sync.WaitGroup) {
 			fmt.Println("Str value: ", strV)
 		}
 	}
+}
+
+func (_ T1) Log() {
+	fmt.Println("T1")
+}
+
+func setInt(intChan chan int) {
+	time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+	intChan <- 13
+}
+
+func setStr(strChan chan string) {
+	time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+	strChan <- "june"
 }
