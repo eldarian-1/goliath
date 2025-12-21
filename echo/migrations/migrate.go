@@ -15,10 +15,11 @@ const (
 )
 
 func Migrate(ctx context.Context) error {
+	fmt.Println("Start migrations")
+
 	files, err := os.ReadDir(migrationsDir)
 	if err != nil {
-		fmt.Printf("failed to read migrations directory: %s", err.Error())
-		return nil
+		return fmt.Errorf("failed to read directory: %w", err)
 	}
 
 	var sqlFiles []string
