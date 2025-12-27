@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -9,6 +10,7 @@ import (
 	"goliath/handlers/api/v1"
 	"goliath/handlers/api/v1/users"
 	"goliath/types/api"
+	"goliath/utils"
 )
 
 var handlers []Handler
@@ -47,5 +49,5 @@ func Define() {
 		e.Add(h.GetMethod(), h.GetPath(), h.DoHandle)
 	}
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", utils.GetEnv("GOLIATH_PORT", "8080"))))
 }

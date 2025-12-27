@@ -1,8 +1,9 @@
 services:
   kafka:
+    platform: linux/arm64
     image: apache/kafka-native
-    ports:
-      - "9092:9092"
+    # ports:
+    #   - "9092:9092"
     environment:
       # Configure listeners for both docker and host communication
       KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
@@ -20,7 +21,7 @@ services:
 
       # Required for a single node cluster
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  
+
   kafka-ui:
     image: kafbat/kafka-ui:main
     ports:
@@ -33,12 +34,19 @@ services:
       - kafka
 
   rabbitmq:
+    platform: linux/arm64
     image: rabbitmq:4-management
     ports:
       - 15672:15672
-      - 5672:5672
+      # - 5672:5672
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   postgresql:
+    platform: linux/arm64
     image: postgres
     restart: always
     shm_size: 128mb
@@ -46,8 +54,14 @@ services:
       POSTGRES_DB: goliath
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-    ports:
-      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d goliath -U user"]
+      interval: 5s
+      retries: 5
+    # ports:
+    #   - 5432:5432
+    # volumes:
+    #   - pgdata:/var/lib/postgresql/data
 
   adminer:
     image: adminer
@@ -56,3 +70,40 @@ services:
       - postgresql
     ports:
       - 8082:8080
+
+  # s3storage:
+  #   platform: linux/arm64
+  #   image: scality/s3server:latest
+  #   ports:
+  #     - 8083:8000
+
+  goliath:
+    platform: linux/arm64
+    build:
+      context: service/
+      dockerfile: Dockerfile
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      GOLIATH_PORT: "8080"
+      GOLIATH_MIGRATIONS: /app/migrations/postgres
+      # postgres
+      POSTGRES_HOST: postgresql:5432
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: goliath
+      # rabbitmq
+      RABBITMQ_HOST: rabbitmq:5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      # kafka
+      KAFKA_HOST: kafka:9092
+      # s3storage
+      S3STORAGE_HOST: s3storage:8083
+    ports:
+      - 8080:8080

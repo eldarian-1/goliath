@@ -1,6 +1,10 @@
 # goliath
 
 ```bash
+docker-compose up --build 'goliath' 
+```
+
+```bash
 go run server.go
 ```
 

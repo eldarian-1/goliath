@@ -2,14 +2,29 @@ package rabbit
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 
 	"goliath/queues/rabbit/consumers"
+	"goliath/utils"
 )
 
-const consumerName = "echo_server_rabbit_consumer"
+const (
+	consumerName = "echo_server_rabbit_consumer"
+)
+
+var rabbitConnectionString string
+
+func init() {
+	rabbitConnectionString = fmt.Sprintf(
+		"amqp://%s:%s@%s/",
+		utils.GetEnv("RABBITMQ_USER", "guest"),
+		utils.GetEnv("RABBITMQ_PASSWORD", "guest"),
+		utils.GetEnv("RABBITMQ_HOST", "localhost:5672"),
+	)
+}
 
 func StartRabbitConsumers(ctx context.Context) {
 	consumers := []consumers.Consumer{
@@ -21,7 +36,7 @@ func StartRabbitConsumers(ctx context.Context) {
 }
 
 func startConsumer(ctx context.Context, consumer consumers.Consumer) {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(rabbitConnectionString)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 

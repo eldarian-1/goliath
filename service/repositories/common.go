@@ -2,15 +2,25 @@ package repositories
 
 import (
 	"context"
+	"fmt"
+	"goliath/utils"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-const (
-	connectionUrl = "postgres://user:password@localhost:5432/goliath"
-)
+var connectionUrl string
+
+func init() {
+	connectionUrl = fmt.Sprintf(
+		"postgres://%s:%s@%s/%s",
+		utils.GetEnv("POSTGRES_USER", "user"),
+		utils.GetEnv("POSTGRES_PASSWORD", "password"),
+		utils.GetEnv("POSTGRES_HOST", "localhost:5432"),
+		utils.GetEnv("POSTGRES_DB", "goliath"),
+	)
+}
 
 func Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
 	withTimeout, cancel := context.WithTimeout(ctx, 5*time.Second)

@@ -8,16 +8,23 @@ import (
 	"sort"
 
 	"goliath/repositories"
+	"goliath/utils"
 )
 
 const (
-	migrationsDir = "/Users/eldarian-13/goliath/echo/migrations/postgres"
+	defaultMigrationsDir = "/Users/eldarian-13/goliath/service/migrations/postgres"
 )
+
+var migrationsDir string
+
+func init() {
+	migrationsDir = utils.GetEnv("GOLIATH_MIGRATIONS", defaultMigrationsDir)
+}
 
 func Migrate(ctx context.Context) error {
 	fmt.Println("Start migrations")
 
-	files, err := os.ReadDir(migrationsDir)
+	files, err := os.ReadDir(utils.GetEnv("GOLIATH_MIGRATIONS", migrationsDir))
 	if err != nil {
 		return fmt.Errorf("failed to read directory: %w", err)
 	}

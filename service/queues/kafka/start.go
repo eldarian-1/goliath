@@ -8,6 +8,7 @@ import (
 
 	"goliath/queues/kafka/consumers"
 	"goliath/queues/kafka/messages"
+	"goliath/utils"
 )
 
 type reader struct {
@@ -15,12 +16,12 @@ type reader struct {
 	kafkaReader *kafka.Reader
 }
 
-const kafkaHost = "localhost:9092"
-
+var kafkaHost string
 var kafkaWriterMap map[string]*kafka.Writer
 var readerMap map[string]reader
 
 func init() {
+	kafkaHost = utils.GetEnv("KAFKA_HOST", "localhost:9092")
 	initWriters()
 	initReaders()
 }
