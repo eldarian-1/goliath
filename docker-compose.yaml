@@ -60,8 +60,8 @@ services:
       retries: 5
     # ports:
     #   - 5432:5432
-    # volumes:
-    #   - pgdata:/var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   adminer:
     image: adminer
@@ -71,11 +71,23 @@ services:
     ports:
       - 8082:8080
 
-  # s3storage:
-  #   platform: linux/arm64
-  #   image: scality/s3server:latest
-  #   ports:
-  #     - 8083:8000
+  s3storage:
+    platform: linux/arm64
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    volumes:
+      - minio-data:/data
+    ports:
+      # - "9000:9000"   # S3 API
+      - "9001:9001"   # Web UI
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   goliath:
     platform: linux/arm64
@@ -89,6 +101,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_started
+      s3storage:
+        condition: service_healthy
     environment:
       GOLIATH_PORT: "8080"
       GOLIATH_MIGRATIONS: /app/migrations/postgres
@@ -104,6 +118,10 @@ services:
       # kafka
       KAFKA_HOST: kafka:9092
       # s3storage
-      S3STORAGE_HOST: s3storage:8083
+      S3STORAGE_HOST: s3storage:8000
     ports:
       - 8080:8080
+
+volumes:
+  minio-data:
+  pgdata:
