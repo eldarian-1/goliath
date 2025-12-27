@@ -1,14 +1,6 @@
 # goliath
 
 ```bash
-docker-compose up --build 'goliath' 
-```
-
-```bash
-go run server.go
-```
-
-```bash
 curl -i -v -X GET \
     'localhost:8080/api/v1/users'
 ```
