@@ -32,8 +32,21 @@ type File struct {
 func init() {
 	s3StorageUrl = utils.GetEnv("S3_STORAGE_URL", "http://localhost:9000")
 	s3StorageRegion = utils.GetEnv("S3_STORAGE_REGION", "us-east-1")
-	s3StorageKey = utils.GetEnv("S3_STORAGE_URL", "minio")
+	s3StorageKey = utils.GetEnv("S3_STORAGE_KEY", "minio")
 	s3StorageSecret = utils.GetEnv("S3_STORAGE_SECRET", "minio123")
+
+    client, err := getClient(context.Background())
+    if err != nil {
+        panic(err)
+    }
+
+    _, err = client.CreateBucket(context.Background(), &s3.CreateBucketInput{Bucket: aws.String(bucket)})
+    if err != nil {
+        fmt.Printf("S3 Bucket creation failed: %s", err.Error())
+        return
+    }
+
+    fmt.Println("S3 Bucket successfully created")
 }
 
 func Get(ctx context.Context, fileName string) (*File, error) {
