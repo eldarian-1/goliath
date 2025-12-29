@@ -1,8 +1,9 @@
 [BACK](../README.md)
 
 ```bash
-curl -i -v -X GET \
-    'localhost:8080/api/v1/files?name=photo.jpeg'
+curl -X GET \
+    'localhost:8080/api/v1/files?name=photo.jpeg' \
+    -o photo_1.jpeg
 ```
 
 ```bash
