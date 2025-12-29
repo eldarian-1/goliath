@@ -13,7 +13,7 @@ curl -i -v -X DELETE \
 
 ```bash
 curl -i -v -X PUT \
-    localhost:8080/api/v1/files \
+    'localhost:8080/api/v1/files' \
     -H 'Content-Type: application/octet-stream' \
     -H 'Content-Disposition: attachment; filename=photo.jpeg' \
     --data-binary '@docs/files/photo.jpeg'

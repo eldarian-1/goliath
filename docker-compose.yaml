@@ -89,6 +89,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  
+  redis:
+    platform: linux/arm64
+    image: redis:latest
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   goliath:
     platform: linux/arm64
@@ -103,6 +114,8 @@ services:
       kafka:
         condition: service_started
       s3storage:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     environment:
       GOLIATH_PORT: "8080"
@@ -123,6 +136,8 @@ services:
       S3_STORAGE_REGION: us-east-1
       S3_STORAGE_KEY: minio
       S3_STORAGE_SECRET: minio123
+      # redis
+      REDIS_URL: redis:6379
     ports:
       - 8080:8080
 

@@ -53,10 +53,10 @@ func getFile(c echo.Context) (*s3.File, error) {
 	fileName := regexp.FindStringSubmatch(contentDisposition)[2]
 
 	file := s3.File{
-		Name: fileName,
-		ContentType: contentType,
+		Name:               fileName,
+		ContentType:        contentType,
 		ContentDisposition: contentDisposition,
-		Reader: c.Request().Body,
+		Reader:             c.Request().Body,
 	}
 
 	return &file, nil

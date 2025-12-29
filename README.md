@@ -4,7 +4,9 @@
 
 [2 Users](docs/02_users.md)
 
-[2 Files](docs/03_files.md)
+[3 Files](docs/03_files.md)
+
+[4 Cache](docs/04_cache.md)
 
 ```bash
 docker-compose up -d

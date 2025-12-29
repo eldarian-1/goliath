@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type T2 struct {}
+type T2 struct{}
 
 func (_ *T2) Execute(wg *sync.WaitGroup) {
 	defer wg.Done()

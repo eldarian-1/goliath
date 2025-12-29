@@ -13,7 +13,7 @@ type Error struct {
 
 func NewBadRequest(c echo.Context, message string) error {
 	return c.JSON(http.StatusBadRequest, Error{
-		Code:	"bad_request",
+		Code:    "bad_request",
 		Message: message,
 	})
 }
