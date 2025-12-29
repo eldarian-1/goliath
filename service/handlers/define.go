@@ -8,15 +8,18 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	"goliath/handlers/api/v1"
+	"goliath/handlers/api/v1/files"
 	"goliath/handlers/api/v1/users"
 	"goliath/types/api"
 	"goliath/utils"
 )
-
 var handlers []Handler
 
 func init() {
 	handlers = []Handler{
+		files.FilesGet{},
+		files.FilesPut{},
+		files.FilesDelete{},
 		users.UsersGet{},
 		users.UsersPost{},
 		users.UsersDelete{},

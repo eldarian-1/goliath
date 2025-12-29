@@ -60,8 +60,8 @@ services:
       retries: 5
     # ports:
     #   - 5432:5432
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+    # volumes:
+    #   - pgdata:/var/lib/postgresql/data
 
   adminer:
     image: adminer
@@ -76,6 +76,7 @@ services:
     image: minio/minio:latest
     command: server /data --console-address ":9001"
     environment:
+      AWS_REGION: us-east-1
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     volumes:
@@ -105,7 +106,7 @@ services:
         condition: service_healthy
     environment:
       GOLIATH_PORT: "8080"
-      GOLIATH_MIGRATIONS: /app/migrations/postgres
+      GOLIATH_MIGRATIONS: /app/migrations
       # postgres
       POSTGRES_HOST: postgresql:5432
       POSTGRES_USER: user
@@ -118,10 +119,13 @@ services:
       # kafka
       KAFKA_HOST: kafka:9092
       # s3storage
-      S3STORAGE_HOST: s3storage:8000
+      S3_STORAGE_URL: http://s3storage:9000
+      S3_STORAGE_REGION: us-east-1
+      S3_STORAGE_KEY: minio
+      S3_STORAGE_SECRET: minio123
     ports:
       - 8080:8080
 
 volumes:
   minio-data:
-  pgdata:
+  # pgdata:

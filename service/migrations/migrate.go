@@ -24,7 +24,9 @@ func init() {
 func Migrate(ctx context.Context) error {
 	fmt.Println("Start migrations")
 
-	files, err := os.ReadDir(utils.GetEnv("GOLIATH_MIGRATIONS", migrationsDir))
+	dir := fmt.Sprintf("%s/postgres", migrationsDir)
+
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("failed to read directory: %w", err)
 	}
@@ -38,7 +40,7 @@ func Migrate(ctx context.Context) error {
 	sort.Strings(sqlFiles)
 
 	for _, filename := range sqlFiles {
-		filePath := filepath.Join(migrationsDir, filename)
+		filePath := filepath.Join(dir, filename)
 
 		content, err := os.ReadFile(filePath)
 		if err != nil {
