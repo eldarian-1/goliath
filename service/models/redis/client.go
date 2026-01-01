@@ -15,16 +15,16 @@ func init() {
 	redisUrl = utils.GetEnv("REDIS_URL", "localhost:6379")
 }
 
-func Get(ctx context.Context, key string) (any, error) {
+func Get(ctx context.Context, key string) ([]byte, error) {
 	rdb := getClient()
 
-	var value string
+	var value []byte
 	err := rdb.Get(ctx, key).Scan(&value)
 
 	return value, err
 }
 
-func Set(ctx context.Context, key string, value any, expiration time.Duration) error {
+func Set(ctx context.Context, key string, value []byte, expiration time.Duration) error {
 	rdb := getClient()
 	return rdb.Set(ctx, key, value, expiration).Err()
 }

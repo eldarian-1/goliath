@@ -5,6 +5,6 @@ import (
 )
 
 type Test interface {
+	Name() string
 	Execute(wg *sync.WaitGroup)
-	Log()
 }

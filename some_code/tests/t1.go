@@ -9,6 +9,10 @@ import (
 
 type T1 struct{}
 
+func (_ T1) Name() string {
+	return "T1"
+}
+
 func (_ T1) Execute(wg *sync.WaitGroup) {
 	defer wg.Done()
 
@@ -24,26 +28,6 @@ func (_ T1) Execute(wg *sync.WaitGroup) {
 			fmt.Println("Int value: ", intV)
 		case strV := <-strChan:
 			fmt.Println("Str value: ", strV)
-		}
-	}
-}
-
-func (_ T1) Log() {
-	fmt.Println("T1")
-	log(1, "dwa", T1{}, T2{})
-}
-
-func log(args ...interface{}) {
-	for i, arg := range args {
-		switch arg.(type) {
-		case int:
-			fmt.Printf("%d) Int value: %d\n", i, arg)
-		case string:
-			fmt.Printf("%d) Str value: %s\n", i, arg)
-		case T1:
-			fmt.Printf("%d) T1 value: %s\n", i, arg)
-		default:
-			fmt.Printf("%d) Unknown type: %w\n", i, arg)
 		}
 	}
 }

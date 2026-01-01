@@ -1,26 +1,39 @@
 package main
 
 import (
-	"context"
+	"os"
 	"sync"
 
 	"some_code/tests"
 )
 
-func main() {
-	tests := []tests.Test{
+var testNames map[string]bool
+var allTests []tests.Test
+
+func init() {
+	testNames = make(map[string]bool)
+	for _, arg := range os.Args[1:] {
+		testNames[arg] = true
+	}
+
+	allTests = []tests.Test{
 		tests.T1{},
 		&tests.T2{},
+		tests.T3{},
+		tests.T4{},
 	}
-	var wg sync.WaitGroup
-	wg.Add(len(tests))
+}
 
-	for _, test := range tests {
+func main() {
+	var wg sync.WaitGroup
+
+	for _, test := range allTests {
+		if len(testNames) > 0 && !testNames[test.Name()] {
+			continue
+		}
+		wg.Add(1)
 		go test.Execute(&wg)
-		test.Log()
 	}
 
 	wg.Wait()
-
-	context.Background().Done()
 }

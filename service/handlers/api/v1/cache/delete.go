@@ -27,5 +27,5 @@ func (_ CacheDelete) DoHandle(c echo.Context) error {
 
 	redis.Del(c.Request().Context(), key)
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }

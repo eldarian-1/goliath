@@ -30,5 +30,5 @@ func (_ CacheGet) DoHandle(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, value)
+	return c.Blob(http.StatusOK, "application/octet-stream", value)
 }

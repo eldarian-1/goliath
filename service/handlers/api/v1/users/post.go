@@ -45,5 +45,5 @@ func (_ UsersPost) DoHandle(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusNoContent, u)
+	return c.NoContent(http.StatusNoContent)
 }

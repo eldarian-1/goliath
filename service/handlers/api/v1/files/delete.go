@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"goliath/models/redis"
 	"goliath/models/s3"
 	"goliath/types/api"
 )
@@ -25,10 +26,12 @@ func (_ FilesDelete) DoHandle(c echo.Context) error {
 		return api.NewBadRequest(c, "file_name is required query param")
 	}
 
+	redis.Del(c.Request().Context(), fileName)
+
 	err := s3.Delete(c.Request().Context(), fileName)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }

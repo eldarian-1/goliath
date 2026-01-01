@@ -31,7 +31,7 @@ func (_ FilesPut) DoHandle(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }
 
 func getFile(c echo.Context) (*s3.File, error) {

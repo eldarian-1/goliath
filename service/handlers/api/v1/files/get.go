@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"goliath/caches"
 	"goliath/models/s3"
 	"goliath/types/api"
 )
@@ -25,10 +26,22 @@ func (_ FilesGet) DoHandle(c echo.Context) error {
 		return api.NewBadRequest(c, "file_name is required query param")
 	}
 
-	file, err := s3.Get(c.Request().Context(), fileName)
+	var file *s3.File
+	var err error
+
+	if cached(c) {
+		file, err = caches.Files{}.Get(c.Request().Context(), fileName)
+	} else {
+		file, err = s3.Get(c.Request().Context(), fileName)
+	}
+
 	if err != nil {
 		return err
 	}
 
 	return c.Stream(http.StatusOK, file.ContentType, file.Reader)
+}
+
+func cached(c echo.Context) bool {
+	return c.QueryParam("cache") == "true"
 }

@@ -51,7 +51,7 @@ func (_ UsersDelete) DoHandle(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }
 
 func getUserId(c echo.Context) (int64, error) {

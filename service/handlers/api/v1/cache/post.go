@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"io"	
 	"net/http"
 	"time"
 
@@ -29,8 +30,7 @@ func (_ CachePost) DoHandle(c echo.Context) error {
 	reader := c.Request().Body
 	defer reader.Close()
 
-	var value []byte
-	_, err := reader.Read(value)
+	value, err := io.ReadAll(reader)
 	if err != nil {
 		return err
 	}
@@ -40,5 +40,5 @@ func (_ CachePost) DoHandle(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }
