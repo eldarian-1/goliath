@@ -2,7 +2,7 @@
 
 ```bash
 curl -X GET \
-    'localhost:8080/api/v1/files?name=photo.jpeg' \
+    'localhost:8080/api/v1/files?name=photo.jpeg&cache=true' \
     -o photo_1.jpeg
 ```
 
