@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -19,6 +20,7 @@ var handlers []Handler
 
 func init() {
 	handlers = []Handler{
+		Metrics{},
 		cache.CacheGet{},
 		cache.CachePost{},
 		cache.CacheDelete{},
@@ -51,6 +53,7 @@ func Define() {
 
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
+	e.Use(echoprometheus.NewMiddleware("goliath"))
 	e.Use(MyMiddleware)
 
 	for _, h := range handlers {

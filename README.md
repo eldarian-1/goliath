@@ -9,5 +9,19 @@
 [4 Cache](docs/04_cache.md)
 
 ```bash
-docker-compose up -d
+docker-compose \
+  -f docker/backend.yml \
+  -f docker/repositories.yml \
+  -f docker/brokers.yml \
+  -f docker/infrastructure.yml \
+   up
+```
+
+```bash
+docker-compose \
+  -f docker/backend.yml \
+  -f docker/repositories.yml \
+  -f docker/brokers.yml \
+  -f docker/infrastructure.yml \
+   down
 ```

@@ -1,0 +1,44 @@
+services:
+  goliath:
+    platform: linux/arm64
+    build:
+      context: ../service/
+      dockerfile: Dockerfile
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      s3storage:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      GOLIATH_PORT: "8080"
+      GOLIATH_MIGRATIONS: /app/migrations
+      # postgres
+      POSTGRES_HOST: postgresql:5432
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: goliath
+      # rabbitmq
+      RABBITMQ_HOST: rabbitmq:5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      # kafka
+      KAFKA_HOST: kafka:9092
+      # s3storage
+      S3_STORAGE_URL: http://s3storage:9000
+      S3_STORAGE_REGION: us-east-1
+      S3_STORAGE_KEY: minio
+      S3_STORAGE_SECRET: minio123
+      # redis
+      REDIS_URL: redis:6379
+    ports:
+      - 8080:8080
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
