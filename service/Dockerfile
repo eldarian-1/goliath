@@ -6,4 +6,4 @@ COPY . .
 RUN go mod download
 
 EXPOSE $GOLIATH_PORT
-CMD ["go", "run", "server.go"]
+CMD ["go", "run", "main.go"]

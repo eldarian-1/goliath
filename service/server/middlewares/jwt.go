@@ -5,7 +5,7 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 
-	"goliath/services/auth"
+	"goliath/logics/auth"
 	"goliath/types/api"
 )
 

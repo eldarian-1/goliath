@@ -1,25 +1,21 @@
-import { useEffect, useState } from "react"
-
-function User(user) {
-  return <div>{user.name}</div>
-}
+import { useAuth } from "./contexts/auth";
+import Login from "./Login";
 
 export default function App() {
-  const [users, setUsers] = useState(null)
+  const { user, register, login, logout, loading } = useAuth();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const res = await fetch('http://localhost:8080/api/v1/users');
-      setUsers((await res.json()).users);
-    };
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
-    fetchUsers();
-  }, []);
+  if (user === null) {
+    return <Login register={register} login={login} />
+  }
 
   return (
-    <>
-      { users === null && <div>Loading...</div> }
-      { users !== null && users.map(user => <User key={user.id} {...user} />) }
-    </>
+    <div>
+      <h1>Welcome, {user.id}</h1>
+      <button onClick={logout}>Logout</button>
+    </div>
   )
 }

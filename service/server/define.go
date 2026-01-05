@@ -19,6 +19,7 @@ import (
 
 var handlers []Handler
 var middlewares []Middleware
+var port string
 
 func init() {
 	middlewares = []Middleware{
@@ -44,6 +45,7 @@ func init() {
 		users.UsersDelete{},
 		v1.Log{},
 	}
+	port = fmt.Sprintf(":%s", utils.GetEnv("GOLIATH_PORT", "8080"))
 }
 
 func Define() {
@@ -61,5 +63,5 @@ func Define() {
 		e.Add(h.GetMethod(), h.GetPath(), h.DoHandle)
 	}
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", utils.GetEnv("GOLIATH_PORT", "8080"))))
+	e.Logger.Fatal(e.Start(port))
 }

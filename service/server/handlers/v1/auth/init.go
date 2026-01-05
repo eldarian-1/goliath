@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"goliath/services/auth"
+	"goliath/logics/auth"
 )
 
 var Service *auth.Service
