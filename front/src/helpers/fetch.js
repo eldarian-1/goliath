@@ -19,9 +19,5 @@ export async function fetchWithRefresh(path, options = {}) {
     res = await fetch(makeUrl(path), { ...options, credentials: 'include' })
   }
 
-  if (!res.ok) {
-    throw new Error(res.statusText)
-  }
-
-  return await res.json()
+  return res
 }
