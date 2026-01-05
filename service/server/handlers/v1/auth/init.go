@@ -1,16 +1,17 @@
 package auth
 
 import (
-	"goliath/server/handlers/v1/auth/gpt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+
+	"goliath/services/auth"
 )
 
-var Service *gpt.Service
+var Service *auth.Service
 
 func init() {
-	Service = gpt.NewService()
+	Service = auth.NewService()
 }
 
 func SetCookie(c echo.Context, name, value string, maxAge int) {

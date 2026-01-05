@@ -1,9 +1,13 @@
-package gpt
+package auth
 
 import (
 	"errors"
 
 	"golang.org/x/crypto/bcrypt"
+)
+
+const (
+	userNotFoundOrInvalidPassword = "User not found or invalid password"
 )
 
 type Service struct {
@@ -21,7 +25,7 @@ func NewService() *Service {
 func (s *Service) Register(email, password string) (*User, error) {
 	_, ok := s.Users[email]
 	if ok {
-		return nil, errors.New("already exists")
+		return nil, errors.New("User already exists")
 	}
 
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
@@ -41,14 +45,14 @@ func (s *Service) Register(email, password string) (*User, error) {
 func (s *Service) Login(email, password string) (*User, error) {
 	user, ok := s.Users[email]
 	if !ok {
-		return nil, errors.New("not found")
+		return nil, errors.New(userNotFoundOrInvalidPassword)
 	}
 
 	if bcrypt.CompareHashAndPassword(
 		[]byte(user.Password),
 		[]byte(password),
 	) != nil {
-		return nil, errors.New("invalid password")
+		return nil, errors.New(userNotFoundOrInvalidPassword)
 	}
 
 	return &user, nil

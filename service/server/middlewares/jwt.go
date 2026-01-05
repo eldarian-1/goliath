@@ -1,11 +1,12 @@
 package middlewares
 
 import (
-	"goliath/server/handlers/v1/auth/gpt"
-
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
+
+	"goliath/services/auth"
+	"goliath/types/api"
 )
 
 type JWT struct{}
@@ -17,11 +18,12 @@ var skippedPaths = map[string]bool{
 
 func (_ JWT) GetMiddleware() echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
-		Skipper:     skip,
-		SigningKey:  gpt.AccessSecret,
-		TokenLookup: "cookie:access",
+		Skipper:      skip,
+		ErrorHandler: handleError,
+		SigningKey:   auth.AccessSecret,
+		TokenLookup:  "cookie:access",
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
-			return &gpt.Claims{}
+			return &auth.Claims{}
 		},
 	})
 }
@@ -29,6 +31,10 @@ func (_ JWT) GetMiddleware() echo.MiddlewareFunc {
 func skip(c echo.Context) bool {
 	_, ok := skippedPaths[c.Path()]
 	return ok
+}
+
+func handleError(c echo.Context, err error) error {
+	return api.NewUnauthorized(c)
 }
 
 // func RequireRole(role string) echo.MiddlewareFunc {

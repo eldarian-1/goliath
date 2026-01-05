@@ -1,4 +1,4 @@
-package gpt
+package auth
 
 import (
 	"time"

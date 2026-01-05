@@ -11,6 +11,13 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+func NewUnauthorized(c echo.Context) error {
+	return c.JSON(http.StatusUnauthorized, Error{
+		Code:    "unauthorized",
+		Message: "Unauthorized user",
+	})
+}
+
 func NewBadRequest(c echo.Context, message string) error {
 	return c.JSON(http.StatusBadRequest, Error{
 		Code:    "bad_request",

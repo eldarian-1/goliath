@@ -6,7 +6,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 
-	"goliath/server/handlers/v1/auth/gpt"
+	"goliath/services/auth"
+	"goliath/types/api"
 )
 
 type Me struct{}
@@ -22,23 +23,17 @@ func (_ Me) GetMethod() string {
 func (_ Me) DoHandle(c echo.Context) error {
 	user := c.Get("user")
 	if user == nil {
-		return c.JSON(http.StatusUnauthorized, echo.Map{
-			"error": "user is nil",
-		})
+		return api.NewUnauthorized(c)
 	}
 
 	token := user.(*jwt.Token)
 	if token == nil {
-		return c.JSON(http.StatusUnauthorized, echo.Map{
-			"error": "token is nil",
-		})
+		return api.NewUnauthorized(c)
 	}
 
-	claims := token.Claims.(*gpt.Claims)
+	claims := token.Claims.(*auth.Claims)
 	if claims == nil {
-		return c.JSON(http.StatusUnauthorized, echo.Map{
-			"error": "claims is nil",
-		})
+		return api.NewUnauthorized(c)
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{

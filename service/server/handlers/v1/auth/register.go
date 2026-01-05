@@ -5,7 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"goliath/server/handlers/v1/auth/gpt"
+	"goliath/services/auth"
+	"goliath/types/api"
 )
 
 type Register struct{}
@@ -25,16 +26,16 @@ func (_ Register) DoHandle(c echo.Context) error {
 	}
 
 	if err := c.Bind(&req); err != nil {
-		return err
+		return api.NewBadRequest(c, "Bad request")
 	}
 
 	user, err := Service.Register(req.Email, req.Password)
 	if err != nil {
-		return err
+		return api.NewBadRequest(c, err.Error())
 	}
 
-	access, _ := gpt.GenerateAccessToken(*user)
-	refresh, _ := gpt.GenerateRefreshToken(*user)
+	access, _ := auth.GenerateAccessToken(*user)
+	refresh, _ := auth.GenerateRefreshToken(*user)
 
 	Service.SaveRefresh(refresh, user.ID)
 

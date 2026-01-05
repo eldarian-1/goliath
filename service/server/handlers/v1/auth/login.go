@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"goliath/server/handlers/v1/auth/gpt"
+	"goliath/services/auth"
 	"goliath/types/api"
 )
 
@@ -31,11 +31,11 @@ func (_ Login) DoHandle(c echo.Context) error {
 
 	user, err := Service.Login(req.Email, req.Password)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, echo.Map{"error": err.Error()})
+		return api.NewBadRequest(c, err.Error())
 	}
 
-	access, _ := gpt.GenerateAccessToken(*user)
-	refresh, _ := gpt.GenerateRefreshToken(*user)
+	access, _ := auth.GenerateAccessToken(*user)
+	refresh, _ := auth.GenerateRefreshToken(*user)
 
 	Service.SaveRefresh(refresh, user.ID)
 
