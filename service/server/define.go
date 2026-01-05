@@ -1,26 +1,38 @@
-package handlers
+package server
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"goliath/handlers/api/v1"
-	"goliath/handlers/api/v1/cache"
-	"goliath/handlers/api/v1/files"
-	"goliath/handlers/api/v1/users"
-	"goliath/types/api"
+	h "goliath/server/handlers"
+	"goliath/server/handlers/v1"
+	"goliath/server/handlers/v1/auth"
+	"goliath/server/handlers/v1/cache"
+	"goliath/server/handlers/v1/files"
+	"goliath/server/handlers/v1/users"
+	mw "goliath/server/middlewares"
 	"goliath/utils"
 )
 
 var handlers []Handler
+var middlewares []Middleware
 
 func init() {
+	middlewares = []Middleware{
+		mw.CORS{},
+		mw.Errors{},
+		mw.JWT{},
+	}
 	handlers = []Handler{
-		Metrics{},
+		auth.Login{},
+		auth.Logout{},
+		auth.Me{},
+		auth.Refresh{},
+		auth.Register{},
+		h.Metrics{},
 		cache.CacheGet{},
 		cache.CachePost{},
 		cache.CacheDelete{},
@@ -34,27 +46,16 @@ func init() {
 	}
 }
 
-func MyMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		err := next(c)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, api.Error{
-				Code:    "internal_server_error",
-				Message: err.Error(),
-			})
-		}
-
-		return nil
-	}
-}
-
 func Define() {
 	e := echo.New()
 
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 	e.Use(echoprometheus.NewMiddleware("goliath"))
-	e.Use(MyMiddleware)
+
+	for _, m := range middlewares {
+		e.Use(m.GetMiddleware())
+	}
 
 	for _, h := range handlers {
 		e.Add(h.GetMethod(), h.GetPath(), h.DoHandle)

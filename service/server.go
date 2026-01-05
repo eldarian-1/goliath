@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"goliath/handlers"
 	"goliath/migrations"
-	"goliath/queues/kafka"
-	"goliath/queues/rabbit"
+	"goliath/server"
+	// "goliath/queues/kafka"
+	// "goliath/queues/rabbit"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 		return
 	}
 
-	rabbit.StartRabbitConsumers(ctx)
-	kafka.StartKafkaConsumers(ctx)
-	handlers.Define()
+	// rabbit.StartRabbitConsumers(ctx)
+	// kafka.StartKafkaConsumers(ctx)
+	server.Define()
 }

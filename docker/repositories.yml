@@ -17,13 +17,13 @@ services:
     # volumes:
     #   - pg-data:/var/lib/postgresql/data
 
-  adminer:
-    image: adminer
-    restart: always
-    depends_on:
-      - postgresql
-    ports:
-      - 8082:8080
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   depends_on:
+  #     - postgresql
+  #   ports:
+  #     - 8082:8080
 
   s3storage:
     platform: linux/arm64
@@ -44,16 +44,16 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    platform: linux/arm64
-    image: redis:latest
-    ports:
-      - 6379:6379
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+  # redis:
+  #   platform: linux/arm64
+  #   image: redis:latest
+  #   ports:
+  #     - 6379:6379
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
 
 volumes:
   minio-data:

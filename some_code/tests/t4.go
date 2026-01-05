@@ -9,7 +9,7 @@ import (
 
 const (
 	unlocked = false
-	locked = true
+	locked   = true
 
 	mutexRetries = 3
 

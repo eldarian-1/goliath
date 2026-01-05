@@ -18,7 +18,7 @@ type file struct {
 	Bytes              []byte `json:"bytes"`
 }
 
-type Files struct {}
+type Files struct{}
 
 func (_ Files) Get(ctx context.Context, filename string) (*s3.File, error) {
 	marshalledFile, err := redis.Get(ctx, filename)
@@ -32,10 +32,10 @@ func (_ Files) Get(ctx context.Context, filename string) (*s3.File, error) {
 		}
 
 		return &s3.File{
-			Name:			   	cacheFile.Name,
-			ContentType:		cacheFile.ContentType,
+			Name:               cacheFile.Name,
+			ContentType:        cacheFile.ContentType,
 			ContentDisposition: cacheFile.ContentDisposition,
-			Reader:			 	bytes.NewReader(cacheFile.Bytes),
+			Reader:             bytes.NewReader(cacheFile.Bytes),
 		}, nil
 	}
 
@@ -50,10 +50,10 @@ func (_ Files) Get(ctx context.Context, filename string) (*s3.File, error) {
 	}
 
 	cacheFile := &file{
-		Name:			   	s3file.Name,
-		ContentType:		s3file.ContentType,
+		Name:               s3file.Name,
+		ContentType:        s3file.ContentType,
 		ContentDisposition: s3file.ContentDisposition,
-		Bytes:			   	bytesFile,
+		Bytes:              bytesFile,
 	}
 
 	marshalledFile, err = json.Marshal(cacheFile)
@@ -61,7 +61,7 @@ func (_ Files) Get(ctx context.Context, filename string) (*s3.File, error) {
 		return nil, err
 	}
 
-	err = redis.Set(ctx, filename, marshalledFile, 5 * time.Minute)
+	err = redis.Set(ctx, filename, marshalledFile, 5*time.Minute)
 	if err != nil {
 		return nil, err
 	}
