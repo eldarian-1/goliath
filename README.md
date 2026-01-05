@@ -25,3 +25,7 @@ docker-compose \
   -f docker/infrastructure.yml \
    down
 ```
+
+```bash
+docker-compose -f docker/frontend.yml up --build
+```
