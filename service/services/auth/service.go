@@ -11,19 +11,24 @@ const (
 )
 
 type Service struct {
-	Users         map[string]User   // email → user
+	users         map[string]User   // email → user
 	refreshTokens map[string]string // refresh → userID
 }
 
 func NewService() *Service {
 	return &Service{
-		Users:         make(map[string]User),
+		users:         make(map[string]User),
 		refreshTokens: make(map[string]string),
 	}
 }
 
+func (s *Service) GetUser(email string) (*User, bool) {
+	user, ok := s.users[email]
+	return &user, ok
+}
+
 func (s *Service) Register(email, password string) (*User, error) {
-	_, ok := s.Users[email]
+	_, ok := s.users[email]
 	if ok {
 		return nil, errors.New("User already exists")
 	}
@@ -37,13 +42,13 @@ func (s *Service) Register(email, password string) (*User, error) {
 		Role:     "user",
 	}
 
-	s.Users[email] = user
+	s.users[email] = user
 
 	return &user, nil
 }
 
 func (s *Service) Login(email, password string) (*User, error) {
-	user, ok := s.Users[email]
+	user, ok := s.users[email]
 	if !ok {
 		return nil, errors.New(userNotFoundOrInvalidPassword)
 	}

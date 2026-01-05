@@ -42,9 +42,13 @@ func (_ Refresh) DoHandle(c echo.Context) error {
 	}
 
 	userID := t.Claims.(*jwt.RegisteredClaims).Subject
-	user := Service.Users[userID]
+	user, ok := Service.GetUser(userID)
 
-	access, _ := auth.GenerateAccessToken(user)
+	if !ok {
+		return api.NewUnauthorized(c)
+	}
+
+	access, _ := auth.GenerateAccessToken(*user)
 	SetCookie(c, "access", access, 900)
 
 	return c.NoContent(http.StatusNoContent)
