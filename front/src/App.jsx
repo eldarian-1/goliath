@@ -1,8 +1,8 @@
-import { useAuth } from "./contexts/auth";
-import Login from "./Login";
+import { useAuth } from "./contexts/auth"
+import Login from "./Login"
 
 export default function App() {
-  const { user, register, login, logout, loading } = useAuth();
+  const { user, register, login, logout, loading } = useAuth()
 
   if (loading) {
     return <div>Loading...</div>
