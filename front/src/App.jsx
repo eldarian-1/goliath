@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { useAuth } from "./contexts/auth"
 import Login from "./components/login/Login"
@@ -20,6 +21,14 @@ import styles from "./App.module.css"
 
 export default function App() {
   const { user, register, login, logout, loading, error, clearError } = useAuth()
+  const [showLoginModal, setShowLoginModal] = useState(false)
+
+  // Close modal when user successfully logs in or registers
+  useEffect(() => {
+    if (user && showLoginModal) {
+      setShowLoginModal(false)
+    }
+  }, [user, showLoginModal])
 
   if (loading) {
     return (
@@ -32,19 +41,10 @@ export default function App() {
     )
   }
 
-  if (user === null) {
-    return (
-      <>
-        <Login register={register} login={login} />
-        {error && <Notification message={error} onClose={clearError} />}
-      </>
-    )
-  }
-
   return (
     <BrowserRouter>
       <div className={styles.appContainer}>
-        <Header />
+        <Header onLoginClick={() => setShowLoginModal(true)} />
         
         <div className={styles.mainLayout}>
           <Navigation />
@@ -70,6 +70,16 @@ export default function App() {
             <Footer />
           </div>
         </div>
+
+        {showLoginModal && (
+          <Login
+            register={register}
+            login={login}
+            onClose={() => setShowLoginModal(false)}
+          />
+        )}
+
+        {error && <Notification message={error} onClose={clearError} />}
       </div>
     </BrowserRouter>
   )

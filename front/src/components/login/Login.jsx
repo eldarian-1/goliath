@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./Login.module.css";
 
-export default function Login({register, login}) {
+export default function Login({ register, login, onClose }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -11,12 +11,20 @@ export default function Login({register, login}) {
   const handleRegister = () => register(email, password)
   const handleLogin = () => login(email, password)
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose()
+    }
+  }
+
   return (
-    <div className={styles.loginContainer}>
+    <div className={styles.modalOverlay} onClick={handleBackdropClick}>
       <div className={styles.loginCard}>
+        <button className={styles.closeButton} onClick={onClose}>×</button>
+        
         <div className={styles.loginHeader}>
           <h1 className={styles.loginTitle}>Goliath</h1>
-          <p className={styles.loginSubtitle}>Welcome back! Please login to your account.</p>
+          <p className={styles.loginSubtitle}>Welcome! Please login or register.</p>
         </div>
         
         <form className={styles.loginForm} onSubmit={(e) => e.preventDefault()}>

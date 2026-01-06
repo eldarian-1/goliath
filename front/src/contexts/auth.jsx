@@ -11,7 +11,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     fetchWithAuth('/api/v1/auth/me')
       .then(res => res.ok ? res.json() : null)
-      .then(data => setUser(data))
+      .then(data => {
+        // If no user data, set user to false (guest mode) instead of null
+        setUser(data || false);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -61,7 +64,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     await fetchWithAuth('/api/v1/auth/logout', { method: 'POST' });
-    setUser(null);
+    setUser(false); // Set to false (guest mode) instead of null
   };
 
   const clearError = () => setError(null);

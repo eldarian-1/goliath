@@ -1,7 +1,7 @@
 import { useAuth } from "../../contexts/auth"
 import styles from "./Header.module.css"
 
-export default function Header() {
+export default function Header({ onLoginClick }) {
   const { user, logout } = useAuth()
 
   const getInitials = (id) => {
@@ -16,19 +16,27 @@ export default function Header() {
       </div>
       
       <div className={styles.headerRight}>
-        <div className={styles.userInfo}>
-          <div className={styles.userAvatar}>
-            {getInitials(user.id)}
-          </div>
-          <div className={styles.userDetails}>
-            <span className={styles.userName}>User</span>
-            <span className={styles.userId}>ID: {user.id}</span>
-          </div>
-        </div>
-        
-        <button className={styles.logoutBtn} onClick={logout}>
-          Logout
-        </button>
+        {user ? (
+          <>
+            <div className={styles.userInfo}>
+              <div className={styles.userAvatar}>
+                {getInitials(user.id)}
+              </div>
+              <div className={styles.userDetails}>
+                <span className={styles.userName}>User</span>
+                <span className={styles.userId}>ID: {user.id}</span>
+              </div>
+            </div>
+            
+            <button className={styles.logoutBtn} onClick={logout}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <button className={styles.loginBtn} onClick={onLoginClick}>
+            Login / Register
+          </button>
+        )}
       </div>
     </header>
   )
