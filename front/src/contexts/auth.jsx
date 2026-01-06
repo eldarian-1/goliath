@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchWithAuth('/api/v1/auth/me')
@@ -15,27 +16,47 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = async (email, password) => {
-    const res = await fetchWithAuth('/api/v1/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    if (!res.ok) throw new Error('Registration failed');
+    try {
+      const res = await fetchWithAuth('/api/v1/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      if (res.status !== 204) {
+        const errorData = await res.json().catch(() => ({}));
+        const errorMessage = errorData.message || 'Registration failed';
+        setError(errorMessage);
+        return;
+      }
 
-    const data = await fetchWithAuth('/api/v1/auth/me').then(r => r.json());
-    setUser(data);
+      const data = await fetchWithAuth('/api/v1/auth/me').then(r => r.json());
+      setUser(data);
+    } catch (err) {
+      setError('Registration failed. Please try again.');
+    }
   };
 
   const login = async (email, password) => {
-    const res = await fetchWithAuth('/api/v1/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    if (!res.ok) throw new Error('Login failed');
+    try {
+      const res = await fetchWithAuth('/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      if (res.status !== 204) {
+        const errorData = await res.json().catch(() => ({}));
+        const errorMessage = errorData.message || 'Login failed';
+        setError(errorMessage);
+        return;
+      }
 
-    const data = await fetchWithAuth('/api/v1/auth/me').then(r => r.json());
-    setUser(data);
+      const data = await fetchWithAuth('/api/v1/auth/me').then(r => r.json());
+      setUser(data);
+    } catch (err) {
+      setError('Login failed. Please try again.');
+    }
   };
 
   const logout = async () => {
@@ -43,8 +64,10 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const clearError = () => setError(null);
+
   return (
-    <AuthContext.Provider value={{ user, register, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, register, login, logout, loading, error, clearError }}>
       {children}
     </AuthContext.Provider>
   );
