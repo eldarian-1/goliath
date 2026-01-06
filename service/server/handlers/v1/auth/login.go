@@ -2,6 +2,7 @@ package auth
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 
@@ -29,7 +30,7 @@ func (_ Login) DoHandle(c echo.Context) error {
 		return api.NewBadRequest(c, "Bad request")
 	}
 
-	user, err := Service.Login(req.Email, req.Password)
+	user, err := Service.Login(c.Request().Context(), req.Email, req.Password)
 	if err != nil {
 		return api.NewBadRequest(c, err.Error())
 	}
@@ -37,7 +38,7 @@ func (_ Login) DoHandle(c echo.Context) error {
 	access, _ := auth.GenerateAccessToken(*user)
 	refresh, _ := auth.GenerateRefreshToken(*user)
 
-	Service.SaveRefresh(refresh, user.ID)
+	Service.SaveRefresh(refresh, strconv.FormatInt(user.ID, 10))
 
 	SetCookie(c, "access", access, 900)
 	SetCookie(c, "refresh", refresh, 2592000)

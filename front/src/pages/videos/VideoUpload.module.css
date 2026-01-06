@@ -212,3 +212,15 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.errorMessage {
+  padding: 1rem;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

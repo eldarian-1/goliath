@@ -18,6 +18,13 @@ func NewUnauthorized(c echo.Context) error {
 	})
 }
 
+func NewForbidden(c echo.Context) error {
+	return c.JSON(http.StatusForbidden, Error{
+		Code:    "forbidden",
+		Message: "Insufficient permissions",
+	})
+}
+
 func NewBadRequest(c echo.Context, message string) error {
 	return c.JSON(http.StatusBadRequest, Error{
 		Code:    "bad_request",

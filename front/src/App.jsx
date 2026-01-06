@@ -8,6 +8,7 @@ import Footer from "./components/footer/Footer"
 import Notification from "./components/notification/Notification"
 import Dashboard from "./pages/Dashboard"
 import Users from "./pages/Users"
+import UserEdit from "./pages/UserEdit"
 import Files from "./pages/Files"
 import Videos from "./pages/Videos"
 import Cache from "./pages/Cache"
@@ -55,6 +56,7 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/users" element={<Users />} />
+                <Route path="/users/:id/edit" element={<UserEdit />} />
                 <Route path="/files" element={<Files />} />
                 <Route path="/videos/*" element={<Videos />} />
                 <Route path="/cache" element={<Cache />} />

@@ -314,3 +314,37 @@
     grid-template-columns: 1fr;
   }
 }
+
+.technicalInfo {
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.infoLabel {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.infoValue {
+  font-size: 0.95rem;
+  color: #1f2937;
+  word-break: break-all;
+}
+
+.actionItem {
+  text-decoration: none;
+}

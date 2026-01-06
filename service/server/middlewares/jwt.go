@@ -16,6 +16,10 @@ var skippedPaths = map[string]bool{
 	"/api/v1/auth/login":    true,
 }
 
+var skippedPathPrefixes = []string{
+	"/api/v1/videos/",
+}
+
 func (_ JWT) GetMiddleware() echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
 		Skipper:      skip,
@@ -29,8 +33,21 @@ func (_ JWT) GetMiddleware() echo.MiddlewareFunc {
 }
 
 func skip(c echo.Context) bool {
-	_, ok := skippedPaths[c.Path()]
-	return ok
+	path := c.Path()
+
+	// Check exact paths
+	if _, ok := skippedPaths[path]; ok {
+		return true
+	}
+
+	// Check path prefixes
+	for _, prefix := range skippedPathPrefixes {
+		if len(path) >= len(prefix) && path[:len(prefix)] == prefix {
+			return true
+		}
+	}
+
+	return false
 }
 
 func handleError(c echo.Context, err error) error {

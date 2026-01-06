@@ -42,7 +42,7 @@ func (_ Refresh) DoHandle(c echo.Context) error {
 	}
 
 	userID := t.Claims.(*jwt.RegisteredClaims).Subject
-	user, ok := Service.GetUser(userID)
+	user, ok := Service.GetUser(c.Request().Context(), userID)
 
 	if !ok {
 		return api.NewUnauthorized(c)

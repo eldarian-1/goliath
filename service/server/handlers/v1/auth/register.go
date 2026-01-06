@@ -2,6 +2,7 @@ package auth
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 
@@ -21,15 +22,22 @@ func (_ Register) GetMethod() string {
 
 func (_ Register) DoHandle(c echo.Context) error {
 	var req struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		Name        string   `json:"name"`
+		Email       string   `json:"email"`
+		Password    string   `json:"password"`
+		Permissions []string `json:"permissions,omitempty"`
 	}
 
 	if err := c.Bind(&req); err != nil {
 		return api.NewBadRequest(c, "Bad request")
 	}
 
-	user, err := Service.Register(req.Email, req.Password)
+	// Если name не передан, используем email как name
+	if req.Name == "" {
+		req.Name = req.Email
+	}
+
+	user, err := Service.Register(c.Request().Context(), req.Name, req.Email, req.Password, req.Permissions)
 	if err != nil {
 		return api.NewBadRequest(c, err.Error())
 	}
@@ -37,7 +45,7 @@ func (_ Register) DoHandle(c echo.Context) error {
 	access, _ := auth.GenerateAccessToken(*user)
 	refresh, _ := auth.GenerateRefreshToken(*user)
 
-	Service.SaveRefresh(refresh, user.ID)
+	Service.SaveRefresh(refresh, strconv.FormatInt(user.ID, 10))
 
 	SetCookie(c, "access", access, 900)
 	SetCookie(c, "refresh", refresh, 2592000)

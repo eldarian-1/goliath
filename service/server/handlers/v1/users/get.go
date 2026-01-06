@@ -49,11 +49,13 @@ func (_ UsersGet) DoHandle(c echo.Context) error {
 			deletedAt = &user.DeletedAt.Time
 		}
 		response.Users = append(response.Users, api.User{
-			Id:        &user.Id.Int64,
-			Name:      user.Name,
-			CreatedAt: &user.CreatedAt,
-			UpdatedAt: &user.UpdatedAt,
-			DeletedAt: deletedAt,
+			Id:          &user.Id.Int64,
+			Name:        user.Name,
+			Email:       user.Email,
+			Permissions: user.Permissions,
+			CreatedAt:   &user.CreatedAt,
+			UpdatedAt:   &user.UpdatedAt,
+			DeletedAt:   deletedAt,
 		})
 	}
 

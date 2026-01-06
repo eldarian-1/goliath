@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { fetchWithRefresh } from "../../helpers/fetch"
 import styles from "./VideoUpload.module.css"
 
 export default function VideoUpload() {
@@ -8,6 +9,7 @@ export default function VideoUpload() {
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [dragActive, setDragActive] = useState(false)
+  const [error, setError] = useState(null)
 
   const handleDrag = (e) => {
     e.preventDefault()
@@ -54,31 +56,60 @@ export default function VideoUpload() {
     }
 
     setUploading(true)
-    
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
-        }
-        return prev + 10
-      })
-    }, 300)
+    setError(null)
+    setUploadProgress(0)
 
-    // Simulate API call
-    setTimeout(() => {
-      clearInterval(interval)
-      setUploadProgress(100)
-      setTimeout(() => {
-        alert("Video uploaded successfully!")
-        setSelectedFile(null)
-        setTitle("")
-        setDescription("")
+    try {
+      // Create FormData
+      const formData = new FormData()
+      formData.append("video", selectedFile)
+      formData.append("title", title)
+      formData.append("description", description)
+
+      // Upload with progress tracking
+      const xhr = new XMLHttpRequest()
+
+      // Track upload progress
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100)
+          setUploadProgress(percentComplete)
+        }
+      })
+
+      // Handle completion
+      xhr.addEventListener("load", () => {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText)
+          alert(`Video uploaded successfully! File: ${response.fileName}`)
+          
+          // Reset form
+          setSelectedFile(null)
+          setTitle("")
+          setDescription("")
+          setUploadProgress(0)
+        } else {
+          setError(`Upload failed: ${xhr.statusText}`)
+        }
         setUploading(false)
-        setUploadProgress(0)
-      }, 500)
-    }, 3000)
+      })
+
+      // Handle errors
+      xhr.addEventListener("error", () => {
+        setError("Upload failed. Please try again.")
+        setUploading(false)
+      })
+
+      // Send request
+      xhr.open("POST", "http://localhost:8080/api/v1/videos/upload")
+      xhr.withCredentials = true
+      xhr.send(formData)
+
+    } catch (err) {
+      setError(err.message || "Upload failed")
+      setUploading(false)
+      setUploadProgress(0)
+    }
   }
 
   const formatFileSize = (bytes) => {
@@ -163,6 +194,12 @@ export default function VideoUpload() {
             rows="4"
           />
         </div>
+
+        {error && (
+          <div className={styles.errorMessage}>
+            ⚠️ {error}
+          </div>
+        )}
 
         {uploading && (
           <div className={styles.progressContainer}>

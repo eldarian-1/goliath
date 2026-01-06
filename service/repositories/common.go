@@ -49,3 +49,17 @@ func Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
 
 	return conn.Query(withTimeout, query, args...)
 }
+
+func QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
+	withTimeout, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	conn, err := pgx.Connect(withTimeout, connectionUrl)
+	if err != nil {
+		cancel()
+		return nil
+	}
+	defer conn.Close(withTimeout)
+
+	return conn.QueryRow(withTimeout, query, args...)
+}

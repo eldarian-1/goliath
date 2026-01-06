@@ -27,6 +27,12 @@ func (_ CORS) GetMiddleware() echo.MiddlewareFunc {
 			echo.HeaderContentType,
 			echo.HeaderAccept,
 			echo.HeaderAuthorization,
+			"Range",
+		},
+		ExposeHeaders: []string{
+			"Content-Range",
+			"Accept-Ranges",
+			"Content-Length",
 		},
 		AllowCredentials: true,
 	})

@@ -5,12 +5,14 @@ import (
 	"time"
 )
 
-type User struct {
+type Video struct {
 	Id          sql.NullInt64
-	Name        string
-	Email       string
-	Password    string
-	Permissions []string
+	Title       string
+	Description sql.NullString
+	FileName    string
+	FileSize    int64
+	ContentType string
+	Duration    sql.NullInt32
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   sql.NullTime

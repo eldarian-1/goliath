@@ -13,6 +13,7 @@ import (
 	"goliath/server/handlers/v1/cache"
 	"goliath/server/handlers/v1/files"
 	"goliath/server/handlers/v1/users"
+	"goliath/server/handlers/v1/videos"
 	mw "goliath/server/middlewares"
 	"goliath/utils"
 )
@@ -43,6 +44,9 @@ func init() {
 		users.UsersGet{},
 		users.UsersPost{},
 		users.UsersDelete{},
+		videos.Upload{},
+		videos.List{},
+		videos.Get{},
 		v1.Log{},
 	}
 	port = fmt.Sprintf(":%s", utils.GetEnv("GOLIATH_PORT", "8080"))

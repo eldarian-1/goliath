@@ -2,6 +2,7 @@ package auth
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -36,8 +37,15 @@ func (_ Me) DoHandle(c echo.Context) error {
 		return api.NewUnauthorized(c)
 	}
 
+	// Преобразуем UserID из string в int64 для ответа
+	userID, err := strconv.ParseInt(claims.UserID, 10, 64)
+	if err != nil {
+		return api.NewUnauthorized(c)
+	}
+
 	return c.JSON(http.StatusOK, echo.Map{
-		"id":   claims.UserID,
-		"role": claims.Role,
+		"id":          userID,
+		"name":        claims.UserName,
+		"permissions": claims.Permissions,
 	})
 }

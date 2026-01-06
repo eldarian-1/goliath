@@ -1,8 +1,9 @@
 package auth
 
 type User struct {
-	ID       string
-	Email    string
-	Password string // hash
-	Role     string
+	ID          int64
+	Name        string
+	Email       string
+	Password    string // hash
+	Permissions []string
 }

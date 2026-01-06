@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
+import { fetchWithRefresh } from "../../helpers/fetch"
 import styles from "./VideoView.module.css"
 
 export default function VideoView() {
@@ -7,44 +8,40 @@ export default function VideoView() {
   const navigate = useNavigate()
   const [video, setVideo] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
+  const videoRef = useRef(null)
 
-  // Mock data - replace with actual API call
   useEffect(() => {
-    setTimeout(() => {
-      const mockVideos = {
-        "1": {
-          id: "1",
-          title: "Introduction to React Hooks",
-          description: "Learn the basics of React Hooks including useState and useEffect. This comprehensive tutorial covers everything you need to know to get started with React Hooks and build modern React applications.",
-          videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-          thumbnail: "https://via.placeholder.com/1280x720/667eea/ffffff?text=React+Hooks",
-          duration: "15:30",
-          uploadDate: "2024-01-05",
-          views: 1234,
-          size: "45.2 MB",
-          uploader: "John Doe",
-          tags: ["React", "JavaScript", "Hooks", "Tutorial"]
-        },
-        "2": {
-          id: "2",
-          title: "Advanced JavaScript Patterns",
-          description: "Deep dive into advanced JavaScript design patterns and best practices",
-          videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-          thumbnail: "https://via.placeholder.com/1280x720/764ba2/ffffff?text=JavaScript",
-          duration: "22:15",
-          uploadDate: "2024-01-04",
-          views: 856,
-          size: "67.8 MB",
-          uploader: "Jane Smith",
-          tags: ["JavaScript", "Patterns", "Advanced"]
-        }
-      }
-
-      setVideo(mockVideos[id] || null)
-      setLoading(false)
-    }, 500)
+    fetchVideoMetadata()
   }, [id])
+
+  const fetchVideoMetadata = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const response = await fetchWithRefresh(`/api/v1/videos?limit=100`)
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch video metadata")
+      }
+      
+      const data = await response.json()
+      const foundVideo = data.videos.find(v => v.id.toString() === id)
+      
+      if (!foundVideo) {
+        setVideo(null)
+      } else {
+        setVideo(foundVideo)
+      }
+    } catch (err) {
+      setError(err.message)
+      console.error("Error fetching video:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete this video?")) {
@@ -55,11 +52,30 @@ export default function VideoView() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", { 
-      year: "numeric", 
-      month: "long", 
-      day: "numeric" 
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
     })
+  }
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i]
+  }
+
+  const formatDuration = (seconds) => {
+    if (!seconds) return "N/A"
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const getVideoUrl = () => {
+    return `http://localhost:8080/api/v1/videos/${id}`
   }
 
   if (loading) {
@@ -96,13 +112,13 @@ export default function VideoView() {
 
       <div className={styles.videoPlayer}>
         <video
+          ref={videoRef}
           controls
-          poster={video.thumbnail}
           className={styles.video}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
         >
-          <source src={video.videoUrl} type="video/mp4" />
+          <source src={getVideoUrl()} type={video.contentType} />
           Your browser does not support the video tag.
         </video>
       </div>
@@ -113,16 +129,15 @@ export default function VideoView() {
             <h1 className={styles.videoTitle}>{video.title}</h1>
             <div className={styles.videoStats}>
               <span className={styles.statItem}>
-                👁️ {video.views.toLocaleString()} views
+                📅 {formatDate(video.createdAt)}
               </span>
+              {video.duration && (
+                <span className={styles.statItem}>
+                  ⏱️ {formatDuration(video.duration)}
+                </span>
+              )}
               <span className={styles.statItem}>
-                📅 {formatDate(video.uploadDate)}
-              </span>
-              <span className={styles.statItem}>
-                ⏱️ {video.duration}
-              </span>
-              <span className={styles.statItem}>
-                💾 {video.size}
+                💾 {formatFileSize(video.fileSize)}
               </span>
             </div>
           </div>
@@ -137,50 +152,53 @@ export default function VideoView() {
           </div>
         </div>
 
-        <div className={styles.videoMeta}>
-          <div className={styles.uploaderInfo}>
-            <div className={styles.uploaderAvatar}>
-              {video.uploader.charAt(0)}
-            </div>
-            <div>
-              <div className={styles.uploaderName}>{video.uploader}</div>
-              <div className={styles.uploaderLabel}>Uploader</div>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.descriptionSection}>
-          <h3 className={styles.sectionTitle}>Description</h3>
-          <p className={styles.description}>{video.description}</p>
-        </div>
-
-        {video.tags && video.tags.length > 0 && (
-          <div className={styles.tagsSection}>
-            <h3 className={styles.sectionTitle}>Tags</h3>
-            <div className={styles.tags}>
-              {video.tags.map((tag, index) => (
-                <span key={index} className={styles.tag}>
-                  {tag}
-                </span>
-              ))}
-            </div>
+        {video.description && (
+          <div className={styles.descriptionSection}>
+            <h3 className={styles.sectionTitle}>Description</h3>
+            <p className={styles.description}>{video.description}</p>
           </div>
         )}
+
+        <div className={styles.technicalInfo}>
+          <h3 className={styles.sectionTitle}>Technical Information</h3>
+          <div className={styles.infoGrid}>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>File Name:</span>
+              <span className={styles.infoValue}>{video.fileName}</span>
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>Content Type:</span>
+              <span className={styles.infoValue}>{video.contentType}</span>
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>File Size:</span>
+              <span className={styles.infoValue}>{formatFileSize(video.fileSize)}</span>
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>Video ID:</span>
+              <span className={styles.infoValue}>{video.id}</span>
+            </div>
+          </div>
+        </div>
 
         <div className={styles.actionsSection}>
           <h3 className={styles.sectionTitle}>Actions</h3>
           <div className={styles.actionsList}>
-            <button className={styles.actionItem}>
+            <a
+              href={getVideoUrl()}
+              download={video.fileName}
+              className={styles.actionItem}
+            >
               📥 Download
-            </button>
-            <button className={styles.actionItem}>
-              🔗 Share
-            </button>
-            <button className={styles.actionItem}>
-              ⭐ Add to Favorites
-            </button>
-            <button className={styles.actionItem}>
-              📊 View Analytics
+            </a>
+            <button
+              className={styles.actionItem}
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href)
+                alert("Link copied to clipboard!")
+              }}
+            >
+              🔗 Copy Link
             </button>
           </div>
         </div>
