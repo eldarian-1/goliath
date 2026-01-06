@@ -12,6 +12,10 @@ import Cache from "./pages/Cache"
 import Logs from "./pages/Logs"
 import Settings from "./pages/Settings"
 import Help from "./pages/Help"
+import About from "./pages/About"
+import Documentation from "./pages/Documentation"
+import Support from "./pages/Support"
+import Privacy from "./pages/Privacy"
 import styles from "./App.module.css"
 
 export default function App() {
@@ -55,6 +59,10 @@ export default function App() {
                 <Route path="/logs" element={<Logs />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/help" element={<Help />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/documentation" element={<Documentation />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
