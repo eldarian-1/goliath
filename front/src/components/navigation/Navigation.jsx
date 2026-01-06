@@ -6,6 +6,7 @@ export default function Navigation() {
     { id: 'dashboard', path: '/', icon: '📊', label: 'Dashboard' },
     { id: 'users', path: '/users', icon: '👥', label: 'Users' },
     { id: 'files', path: '/files', icon: '📁', label: 'Files' },
+    { id: 'videos', path: '/videos', icon: '📹', label: 'Videos' },
     { id: 'cache', path: '/cache', icon: '💾', label: 'Cache' },
     { id: 'logs', path: '/logs', icon: '📝', label: 'Logs', badge: '12' },
   ]

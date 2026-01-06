@@ -9,6 +9,7 @@ import Notification from "./components/notification/Notification"
 import Dashboard from "./pages/Dashboard"
 import Users from "./pages/Users"
 import Files from "./pages/Files"
+import Videos from "./pages/Videos"
 import Cache from "./pages/Cache"
 import Logs from "./pages/Logs"
 import Settings from "./pages/Settings"
@@ -55,6 +56,7 @@ export default function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/files" element={<Files />} />
+                <Route path="/videos/*" element={<Videos />} />
                 <Route path="/cache" element={<Cache />} />
                 <Route path="/logs" element={<Logs />} />
                 <Route path="/settings" element={<Settings />} />
