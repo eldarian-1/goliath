@@ -10,6 +10,8 @@ services:
       - ../configs/promtail.yml:/etc/promtail/config.yml
     command: -config.file=/etc/promtail/config.yml
     privileged: true
+    networks:
+      - goliath-network
 
   loki:
     image: grafana/loki:latest
@@ -18,6 +20,8 @@ services:
       - "3100:3100"
     volumes:
       - ../configs/loki.yml:/etc/loki/local-config.yaml
+    networks:
+      - goliath-network
 
   prometheus:
     image: prom/prometheus:latest
@@ -27,6 +31,8 @@ services:
     volumes:
       - ../configs/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
+    networks:
+      - goliath-network
 
   grafana:
     image: grafana/grafana:latest
@@ -41,7 +47,14 @@ services:
     volumes:
       - ../configs/grafana/:/etc/grafana/provisioning/datasources/
       - grafana-data:/var/lib/grafana
+    networks:
+      - goliath-network
 
 volumes:
   grafana-data:
   prometheus-data:
+
+networks:
+  goliath-network:
+    name: goliath-network
+    driver: bridge

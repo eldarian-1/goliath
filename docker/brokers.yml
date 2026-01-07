@@ -21,6 +21,8 @@ services:
 
       # Required for a single node cluster
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - goliath-network
 
   kafka-ui:
     image: kafbat/kafka-ui:main
@@ -32,15 +34,24 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
     depends_on:
       - kafka
+    networks:
+      - goliath-network
 
-  rabbitmq:
-    platform: linux/arm64
-    image: rabbitmq:4-management
-    ports:
-      - 15672:15672
-      # - 5672:5672
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+  # rabbitmq:
+  #   platform: linux/arm64
+  #   image: rabbitmq:4-management
+  #   ports:
+  #     - 15672:15672
+  #     # - 5672:5672
+  #   healthcheck:
+  #     test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - goliath-network
+
+networks:
+  goliath-network:
+    name: goliath-network
+    driver: bridge

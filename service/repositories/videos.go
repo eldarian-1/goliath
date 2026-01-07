@@ -17,6 +17,7 @@ const (
 			file_size,
 			content_type,
 			duration,
+			progress,
 			created_at,
 			updated_at,
 			deleted_at
@@ -38,6 +39,7 @@ const (
 			file_size,
 			content_type,
 			duration,
+			progress,
 			created_at,
 			updated_at,
 			deleted_at
@@ -49,8 +51,8 @@ const (
 	`
 
 	insertVideoQuery = `
-		INSERT INTO goliath.videos (title, description, file_name, file_size, content_type, duration)
-		VALUES ($1::TEXT, $2::TEXT, $3::TEXT, $4::BIGINT, $5::TEXT, $6::INTEGER)
+		INSERT INTO goliath.videos (title, description, file_name, file_size, content_type, duration, progress)
+		VALUES ($1::TEXT, $2::TEXT, $3::TEXT, $4::BIGINT, $5::TEXT, $6::INTEGER, $7::INTEGER)
 		RETURNING id;
 	`
 
@@ -72,6 +74,31 @@ const (
 			goliath.videos
 		SET
 			deleted_at = NOW(),
+			updated_at = NOW()
+		WHERE
+			id = $1::BIGINT AND
+			deleted_at IS NULL;
+	`
+
+	updateVideoProgressQuery = `
+		UPDATE
+			goliath.videos
+		SET
+			progress = $2::INTEGER,
+			updated_at = NOW()
+		WHERE
+			id = $1::BIGINT AND
+			deleted_at IS NULL;
+	`
+
+	updateVideoFileQuery = `
+		UPDATE
+			goliath.videos
+		SET
+			file_name = $2::TEXT,
+			file_size = $3::BIGINT,
+			content_type = $4::TEXT,
+			progress = $5::INTEGER,
 			updated_at = NOW()
 		WHERE
 			id = $1::BIGINT AND
@@ -104,6 +131,7 @@ func GetVideos(ctx context.Context, limit int64, cursorById *int64) ([]postgres.
 			&v.FileSize,
 			&v.ContentType,
 			&v.Duration,
+			&v.Progress,
 			&v.CreatedAt,
 			&v.UpdatedAt,
 			&v.DeletedAt,
@@ -138,6 +166,7 @@ func GetVideoById(ctx context.Context, id int64) (*postgres.Video, error) {
 		&v.FileSize,
 		&v.ContentType,
 		&v.Duration,
+		&v.Progress,
 		&v.CreatedAt,
 		&v.UpdatedAt,
 		&v.DeletedAt,
@@ -159,6 +188,7 @@ func InsertVideo(ctx context.Context, video postgres.Video) (int64, error) {
 		video.FileSize,
 		video.ContentType,
 		video.Duration,
+		video.Progress,
 	)
 	if err != nil {
 		return 0, err
@@ -189,6 +219,18 @@ func UpdateVideo(ctx context.Context, video postgres.Video) (bool, error) {
 
 func DeleteVideo(ctx context.Context, id int64) (bool, error) {
 	tag, err := Exec(ctx, deleteVideoQuery, id)
+
+	return tag.RowsAffected() > 0, err
+}
+
+func UpdateVideoProgress(ctx context.Context, id int64, progress int) (bool, error) {
+	tag, err := Exec(ctx, updateVideoProgressQuery, id, progress)
+
+	return tag.RowsAffected() > 0, err
+}
+
+func UpdateVideoFile(ctx context.Context, id int64, fileName string, fileSize int64, contentType string, progress int) (bool, error) {
+	tag, err := Exec(ctx, updateVideoFileQuery, id, fileName, fileSize, contentType, progress)
 
 	return tag.RowsAffected() > 0, err
 }

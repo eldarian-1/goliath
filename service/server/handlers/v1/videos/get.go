@@ -38,6 +38,11 @@ func (_ Get) DoHandle(c echo.Context) error {
 		return api.NewBadRequest(c, "Video not found")
 	}
 
+	// Check if video is processed (progress = 100)
+	if video.Progress < 100 {
+		return api.NewBadRequest(c, "Video is not ready for playback")
+	}
+
 	// Get video file from S3
 	file, err := s3.Get(c.Request().Context(), video.FileName)
 	if err != nil {
@@ -60,7 +65,7 @@ func (_ Get) DoHandle(c echo.Context) error {
 		// No range request - send entire file
 		c.Response().Header().Set("Content-Length", strconv.FormatInt(fileSize, 10))
 		c.Response().Header().Set("Content-Disposition", file.ContentDisposition)
-		return c.Stream(http.StatusOK, video.ContentType, file.Reader)
+		return c.Stream(http.StatusPartialContent, video.ContentType, file.Reader)
 	}
 
 	// Parse Range header

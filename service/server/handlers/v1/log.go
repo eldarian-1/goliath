@@ -34,7 +34,7 @@ func (_ Log) DoHandle(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }
 
 func sendMessage(log *api.Log) error {

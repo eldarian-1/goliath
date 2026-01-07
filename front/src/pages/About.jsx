@@ -3,9 +3,9 @@ import styles from "./Dashboard.jsx"
 export default function About() {
   return (
     <div>
-      <h1>About Goliath</h1>
+      <h1>About Eldarian Studio</h1>
       <div style={{ marginTop: '2rem' }}>
-        <p>Goliath is a comprehensive system management platform designed to help you manage users, files, cache, and logs efficiently.</p>
+        <p>Eldarian Studio is a comprehensive system management platform designed to help you manage users, files, cache, and logs efficiently.</p>
         
         <h2 style={{ marginTop: '2rem' }}>Features</h2>
         <ul style={{ marginTop: '1rem', lineHeight: '1.8' }}>

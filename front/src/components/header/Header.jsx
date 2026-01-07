@@ -11,7 +11,7 @@ export default function Header({ onLoginClick }) {
   return (
     <header className={styles.header}>
       <div className={styles.headerLeft}>
-        <h1 className={styles.headerLogo}>Goliath</h1>
+        <h1 className={styles.headerLogo}>Eldarian Studio</h1>
         <span className={styles.headerSubtitle}>Management System</span>
       </div>
       

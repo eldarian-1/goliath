@@ -8,9 +8,9 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
         <div className={styles.footerLeft}>
-          <div className={styles.footerBrand}>Goliath</div>
+          <div className={styles.footerBrand}>Eldarian Studio</div>
           <div className={styles.footerCopyright}>
-            © {currentYear} Goliath. All rights reserved.
+            © {currentYear} Eldarian Studio. All rights reserved.
           </div>
         </div>
         

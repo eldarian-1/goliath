@@ -23,7 +23,7 @@ export default function Login({ register, login, onClose }) {
         <button className={styles.closeButton} onClick={onClose}>×</button>
         
         <div className={styles.loginHeader}>
-          <h1 className={styles.loginTitle}>Goliath</h1>
+          <h1 className={styles.loginTitle}>Eldarian Studio</h1>
           <p className={styles.loginSubtitle}>Welcome! Please login or register.</p>
         </div>
         
@@ -65,7 +65,7 @@ export default function Login({ register, login, onClose }) {
         </form>
         
         <div className={styles.loginFooter}>
-          <p>Secure authentication powered by Goliath</p>
+          <p>Secure authentication powered by Eldarian Studio</p>
         </div>
       </div>
     </div>

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"goliath/migrations"
+	"goliath/queues/kafka"
 	"goliath/server"
-	// "goliath/queues/kafka"
 	// "goliath/queues/rabbit"
 )
 
@@ -28,6 +28,6 @@ func main() {
 	}
 
 	// rabbit.StartRabbitConsumers(ctx)
-	// kafka.StartKafkaConsumers(ctx)
+	go kafka.StartKafkaConsumers(ctx)
 	server.Define()
 }

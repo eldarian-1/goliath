@@ -1,8 +1,10 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { fetchWithRefresh } from "../../helpers/fetch"
 import styles from "./VideoUpload.module.css"
 
 export default function VideoUpload() {
+  const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState(null)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -81,13 +83,18 @@ export default function VideoUpload() {
       xhr.addEventListener("load", () => {
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText)
-          alert(`Video uploaded successfully! File: ${response.fileName}`)
           
-          // Reset form
-          setSelectedFile(null)
-          setTitle("")
-          setDescription("")
-          setUploadProgress(0)
+          // Navigate to video view page
+          if (response.id) {
+            navigate(`/videos/view/${response.id}`)
+          } else {
+            alert(`Video uploaded successfully! File: ${response.fileName}`)
+            // Reset form
+            setSelectedFile(null)
+            setTitle("")
+            setDescription("")
+            setUploadProgress(0)
+          }
         } else {
           setError(`Upload failed: ${xhr.statusText}`)
         }

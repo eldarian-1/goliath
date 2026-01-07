@@ -1,4 +1,6 @@
-FROM golang:1.25.5-alpine
+FROM golang:1.25.5
+
+RUN apt update && apt install -y ffmpeg
 
 WORKDIR /app
 

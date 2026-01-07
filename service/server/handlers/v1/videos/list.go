@@ -58,6 +58,7 @@ func (_ List) DoHandle(c echo.Context) error {
 			"fileName":    video.FileName,
 			"fileSize":    video.FileSize,
 			"contentType": video.ContentType,
+			"progress":    video.Progress,
 			"createdAt":   video.CreatedAt,
 		}
 

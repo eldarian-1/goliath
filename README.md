@@ -14,6 +14,7 @@
 docker-compose \
   -f docker/backend.yml \
   -f docker/repositories.yml \
+  -f docker/brokers.yml \
    up
 ```
 

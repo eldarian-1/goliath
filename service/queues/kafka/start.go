@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/segmentio/kafka-go"
@@ -29,6 +30,7 @@ func init() {
 func initWriters() {
 	supportedMessages := []messages.Message{
 		messages.Log{},
+		messages.Video{},
 	}
 	kafkaWriterMap = make(map[string]*kafka.Writer)
 
@@ -45,6 +47,7 @@ func initWriters() {
 func initReaders() {
 	supportedConsumers := []consumers.Consumer{
 		consumers.Log{},
+		consumers.Video{},
 	}
 	readerMap = make(map[string]reader)
 
@@ -84,6 +87,7 @@ func processTopic(ctx context.Context, reader reader) {
 
 		err = reader.consumer.Process(msg.Value)
 		if err != nil {
+			fmt.Println("Failed to process:", err.Error())
 			return
 		}
 	}

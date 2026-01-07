@@ -16,6 +16,21 @@ export default function VideoView() {
     fetchVideoMetadata()
   }, [id])
 
+  useEffect(() => {
+    // Poll for progress updates if video is not fully processed
+    if (!video || video.progress >= 100) {
+      return
+    }
+    
+    const intervalId = setInterval(() => {
+      fetchVideoMetadata()
+    }, 2000) // Poll every 2 seconds
+    
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [video?.progress])
+
   const fetchVideoMetadata = async () => {
     try {
       setLoading(true)
@@ -111,16 +126,33 @@ export default function VideoView() {
       </div>
 
       <div className={styles.videoPlayer}>
-        <video
-          ref={videoRef}
-          controls
-          className={styles.video}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-        >
-          <source src={getVideoUrl()} type={video.contentType} />
-          Your browser does not support the video tag.
-        </video>
+        {video.progress >= 100 ? (
+          <video
+            ref={videoRef}
+            controls
+            className={styles.video}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          >
+            <source src={getVideoUrl()} type={video.contentType} />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <div className={styles.processingMessage}>
+            <div className={styles.processingIcon}>⏳</div>
+            <h3>Video is being processed</h3>
+            <p>Please wait while we convert your video. It will be available for playback shortly.</p>
+            <div className={styles.progressContainer}>
+              <div className={styles.progressBar}>
+                <div
+                  className={styles.progressFill}
+                  style={{ width: `${video.progress}%` }}
+                />
+              </div>
+              <div className={styles.progressText}>{video.progress}%</div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles.videoDetails}>

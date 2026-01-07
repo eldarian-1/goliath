@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Link } from "react-router-dom"
 import { fetchWithRefresh } from "../../helpers/fetch"
 import styles from "./VideoList.module.css"
@@ -10,11 +10,7 @@ export default function VideoList() {
   const [sortBy, setSortBy] = useState("date")
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    fetchVideos()
-  }, [])
-
-  const fetchVideos = async () => {
+  const fetchVideos = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -33,13 +29,34 @@ export default function VideoList() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchVideos()
+  }, [fetchVideos])
+
+  useEffect(() => {
+    // Poll for progress updates if there are videos being processed
+    const hasProcessingVideos = videos.some(v => v.progress < 100)
+    if (!hasProcessingVideos) {
+      return
+    }
+    
+    const intervalId = setInterval(() => {
+      fetchVideos()
+    }, 3000) // Poll every 3 seconds
+    
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [videos, fetchVideos])
 
   const filteredVideos = videos
-    .filter(video =>
-      video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (video.description && video.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
+    .filter(video => {
+      // Apply search filter
+      return video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (video.description && video.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    })
     .sort((a, b) => {
       if (sortBy === "date") {
         return new Date(b.createdAt) - new Date(a.createdAt)
@@ -144,20 +161,37 @@ export default function VideoList() {
             <Link
               key={video.id}
               to={`/videos/view/${video.id}`}
-              className={styles.videoCard}
+              className={`${styles.videoCard} ${video.progress < 100 ? styles.processingCard : ""}`}
             >
               <div className={styles.thumbnailContainer}>
                 <div className={styles.thumbnailPlaceholder}>
-                  🎬
+                  {video.progress >= 100 ? "🎬" : "⏳"}
                 </div>
-                {video.duration && (
+                {video.progress >= 100 && video.duration && (
                   <div className={styles.duration}>{formatDuration(video.duration)}</div>
+                )}
+                {video.progress < 100 && (
+                  <div className={styles.processingBadge}>
+                    {video.progress}%
+                  </div>
                 )}
               </div>
               
               <div className={styles.videoInfo}>
                 <h3 className={styles.videoTitle}>{video.title}</h3>
                 <p className={styles.videoDescription}>{video.description}</p>
+                
+                {video.progress < 100 && (
+                  <div className={styles.progressContainer}>
+                    <div className={styles.progressBar}>
+                      <div
+                        className={styles.progressFill}
+                        style={{ width: `${video.progress}%` }}
+                      />
+                    </div>
+                    <div className={styles.progressText}>Processing: {video.progress}%</div>
+                  </div>
+                )}
                 
                 <div className={styles.videoMeta}>
                   <span className={styles.metaItem}>

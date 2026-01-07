@@ -12,10 +12,12 @@ services:
       test: ["CMD-SHELL", "pg_isready -d goliath -U user"]
       interval: 5s
       retries: 5
+    networks:
+      - goliath-network
     # ports:
     #   - 5432:5432
-    volumes:
-      - pg-data:/var/lib/postgresql/data
+    # volumes:
+    #   - pg-data:/var/lib/postgresql/data
 
   # adminer:
   #   image: adminer
@@ -24,6 +26,8 @@ services:
   #     - postgresql
   #   ports:
   #     - 8082:8080
+  #   networks:
+  #     - goliath-network
 
   s3storage:
     platform: linux/arm64
@@ -43,6 +47,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - goliath-network
 
   # redis:
   #   platform: linux/arm64
@@ -54,7 +60,14 @@ services:
   #     interval: 5s
   #     timeout: 5s
   #     retries: 5
+  #   networks:
+  #     - goliath-network
 
 volumes:
   minio-data:
-  pg-data:
+  # pg-data:
+
+networks:
+  goliath-network:
+    name: goliath-network
+    driver: bridge

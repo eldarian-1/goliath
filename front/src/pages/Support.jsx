@@ -6,7 +6,7 @@ export default function Support() {
       <h1>Support</h1>
       <div style={{ marginTop: '2rem' }}>
         <h2>Get Help</h2>
-        <p style={{ marginTop: '1rem' }}>Need assistance? We're here to help you get the most out of Goliath.</p>
+        <p style={{ marginTop: '1rem' }}>Need assistance? We're here to help you get the most out of Eldarian Studio.</p>
 
         <h2 style={{ marginTop: '2rem' }}>Contact Options</h2>
         <div style={{ marginTop: '1rem', lineHeight: '1.8' }}>

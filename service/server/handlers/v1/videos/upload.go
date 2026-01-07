@@ -13,6 +13,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"goliath/models/s3"
+	"goliath/queues/kafka"
+	"goliath/queues/kafka/messages"
 	"goliath/repositories"
 	"goliath/types/api"
 	"goliath/types/postgres"
@@ -97,18 +99,29 @@ func (_ Upload) DoHandle(c echo.Context) error {
 		return fmt.Errorf("failed to upload to S3: %w", err)
 	}
 
-	// Save video metadata to database
+	// Save video metadata to database with progress 0
 	video := postgres.Video{
 		Title:       title,
 		Description: sql.NullString{String: description, Valid: description != ""},
 		FileName:    fileName,
 		FileSize:    fileHeader.Size,
 		ContentType: contentType,
+		Progress:    0,
 	}
 
 	videoId, err := repositories.InsertVideo(c.Request().Context(), video)
 	if err != nil {
 		return fmt.Errorf("failed to save video metadata: %w", err)
+	}
+
+	// Send video processing event to Kafka
+	videoMessage := messages.Video{
+		VideoId:  videoId,
+		FileName: fileName,
+	}
+	if err := kafka.Send(videoMessage); err != nil {
+		// Log error but don't fail the upload
+		fmt.Printf("Failed to send video processing event to Kafka: %v\n", err)
 	}
 
 	// Return success response with metadata
@@ -120,6 +133,7 @@ func (_ Upload) DoHandle(c echo.Context) error {
 		"description": description,
 		"size":        fileHeader.Size,
 		"contentType": contentType,
+		"progress":    0,
 	})
 }
 

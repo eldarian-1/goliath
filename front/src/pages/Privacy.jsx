@@ -9,7 +9,7 @@ export default function Privacy() {
 
         <h2 style={{ marginTop: '2rem' }}>Introduction</h2>
         <p style={{ marginTop: '1rem' }}>
-          This Privacy Policy describes how Goliath collects, uses, and protects your personal information 
+          This Privacy Policy describes how Eldarian Studio collects, uses, and protects your personal information 
           when you use our platform.
         </p>
 

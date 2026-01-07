@@ -13,6 +13,7 @@ type Video struct {
 	FileSize    int64
 	ContentType string
 	Duration    sql.NullInt32
+	Progress    int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   sql.NullTime

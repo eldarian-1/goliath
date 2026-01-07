@@ -6,7 +6,7 @@ export default function Documentation() {
       <h1>Documentation</h1>
       <div style={{ marginTop: '2rem' }}>
         <h2>Getting Started</h2>
-        <p style={{ marginTop: '1rem' }}>Welcome to the Goliath documentation. Here you'll find guides and references for using the platform.</p>
+        <p style={{ marginTop: '1rem' }}>Welcome to the Eldarian Studio documentation. Here you'll find guides and references for using the platform.</p>
 
         <h2 style={{ marginTop: '2rem' }}>API Documentation</h2>
         <div style={{ marginTop: '1rem' }}>
