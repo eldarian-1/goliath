@@ -65,7 +65,7 @@ func (s *Service) Register(ctx context.Context, name, email, password string, pe
 	}
 
 	// Default permissions for new users
-	if permissions == nil || len(permissions) == 0 {
+	if len(permissions) == 0 {
 		permissions = []string{"read:own", "write:own"}
 	}
 
