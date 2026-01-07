@@ -16,8 +16,8 @@ services:
       - goliath-network
     # ports:
     #   - 5432:5432
-    # volumes:
-    #   - pg-data:/var/lib/postgresql/data
+    volumes:
+      - pg-data:/var/lib/postgresql
 
   # adminer:
   #   image: adminer
@@ -65,7 +65,7 @@ services:
 
 volumes:
   minio-data:
-  # pg-data:
+  pg-data:
 
 networks:
   goliath-network:

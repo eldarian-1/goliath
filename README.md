@@ -15,6 +15,8 @@ docker-compose \
   -f docker/backend.yml \
   -f docker/repositories.yml \
   -f docker/brokers.yml \
+  -f docker/infrastructure.yml \
+  -f docker/frontend.yml \
    up
 ```
 
@@ -24,18 +26,6 @@ docker-compose \
   -f docker/repositories.yml \
   -f docker/brokers.yml \
   -f docker/infrastructure.yml \
-   up
-```
-
-```bash
-docker-compose \
-  -f docker/backend.yml \
-  -f docker/repositories.yml \
-  -f docker/brokers.yml \
-  -f docker/infrastructure.yml \
+  -f docker/frontend.yml \
    down
-```
-
-```bash
-docker-compose -f docker/frontend.yml up --build
 ```

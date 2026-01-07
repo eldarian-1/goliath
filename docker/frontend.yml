@@ -7,8 +7,13 @@ services:
       - "5173:5173"
     networks:
       - goliath-network
-    # volumes:
-    #  - ../front:/app:rw
+    volumes:
+     - ../front:/app:rw
+     - web-node-modules:/app/node_modules
+    command: sh -c "if [ ! -d node_modules ] || [ ! -d node_modules/react-router-dom ]; then npm install --include=optional; fi && npm run dev"
+
+volumes:
+  web-node-modules:
 
 networks:
   goliath-network:
